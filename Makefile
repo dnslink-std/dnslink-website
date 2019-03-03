@@ -4,6 +4,10 @@ build: index.html
 index.html: index.mustache index.md index.js
 	node index.js >$@
 
+serve:
+	open http://localhost:8000
+	python -m SimpleHTTPServer
+
 publish: build bin/ipfs-dumver
 	bin/ipfs-dumver .
 
