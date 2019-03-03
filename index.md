@@ -19,7 +19,8 @@ DNSLink values are of the form:
 dnslink=<value>
 ```
 
-- The `<value>` is the link you want to set, in [multiaddr](https://multiformats.io/multiaddr/) text format. multiaddr is a format for specifying links and network addresses in a self-describing way. The `<value>` is in text form, not binary packed, so that it works well with DNS tooling and services.
+- The `<value>` is the link you want to set. The `<value>` is any link you wish to use. It could be a URL or a path. The `<value>` is in text form, not binary packed, so that it works well with DNS tooling and services.
+  - _(Note: in the future, the value may be a [multiaddr](https://multiformats.io/multiaddr/), in text format. multiaddr is a format for specifying links and network addresses in a self-describing way.)_
 - The prefix `dnslink=` is there to signal that this `TXT` record value is a DNSLink. This is important because many systems use TXT records, and there is a convention of storing multiple space separated values in a single `TXT` record. Following this format allows your DNSLink resolver to parse through whatever is in the `TXT` record and use the first entry prefixed with `dnslink=`.
 
 ### DNSLink chaining

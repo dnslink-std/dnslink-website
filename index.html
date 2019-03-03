@@ -280,7 +280,10 @@ ul {
 <h3 id="dnslink-format">DNSLink Format</h3>
 <p>DNSLink values are of the form:</p>
 <pre><code>dnslink=&lt;value&gt;</code></pre><ul>
-<li>The <code>&lt;value&gt;</code> is the link you want to set, in <a href="https://multiformats.io/multiaddr/">multiaddr</a> text format. multiaddr is a format for specifying links and network addresses in a self-describing way. The <code>&lt;value&gt;</code> is in text form, not binary packed, so that it works well with DNS tooling and services.</li>
+<li>The <code>&lt;value&gt;</code> is the link you want to set. The <code>&lt;value&gt;</code> is any link you wish to use. It could be a URL or a path. The <code>&lt;value&gt;</code> is in text form, not binary packed, so that it works well with DNS tooling and services.<ul>
+<li><em>(Note: in the future, the value may be a <a href="https://multiformats.io/multiaddr/">multiaddr</a>, in text format. multiaddr is a format for specifying links and network addresses in a self-describing way.)</em></li>
+</ul>
+</li>
 <li>The prefix <code>dnslink=</code> is there to signal that this <code>TXT</code> record value is a DNSLink. This is important because many systems use TXT records, and there is a convention of storing multiple space separated values in a single <code>TXT</code> record. Following this format allows your DNSLink resolver to parse through whatever is in the <code>TXT</code> record and use the first entry prefixed with <code>dnslink=</code>.</li>
 </ul>
 <h3 id="dnslink-chaining">DNSLink chaining</h3>
