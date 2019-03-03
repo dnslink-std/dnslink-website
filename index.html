@@ -294,97 +294,87 @@ and CNAME loops signalled as an error.</p>
 <pre><code>&gt; dig +short TXT _dnslink.test3.dnslink.dev
 dnslink=/dnslink/test4.dnslink.dev</code></pre><p>Should go on to resolve</p>
 <pre><code>&gt; dig +short TXT _dnslink.test4.dnslink.dev
-dnslink=/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code></pre><h2 id="tutorial">Tutorial</h2>
+dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><h2 id="tutorial">Tutorial</h2>
 <h3 id="step-0-find-something-to-link-to">Step 0: Find something to link to.</h3>
-<p>In this tutorial, we&#39;ll link to <a href="https://juan.benet.ai">my website</a>, on <a href="https://ipfs.io">IPFS</a>. The website has the IPFS address:</p>
-<pre><code>/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code></pre><p>You can view this on the global IPFS gateway: <a href="https://ipfs.io/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm">https://ipfs.io/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</a></p>
+<p>In this tutorial, we&#39;ll link to <a href="https://libp2p.io">the libp2p website</a>, on <a href="https://ipfs.io">IPFS</a>. The website has the IPFS address:</p>
+<pre><code>/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><p>You can view this on the global IPFS gateway: <a href="https://ipfs.io/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU">https://ipfs.io/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</a></p>
 <p>And even download it with ipfs:</p>
-<pre><code>ipfs get /ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code></pre><h3 id="step-1-choose-a-domain-name-to-link-from">Step 1: Choose a domain name to link from.</h3>
-<p>For this tutorial, I&#39;ll use my domain name <code>juan.benet.ai</code>. You can use whatever domain you control. I happen to be using a <code>CNAME</code> record on this domain as well (to make the website load directly via the IPFS gateway), so i&#39;ll also have to prefix the domain with <code>_dnslink.</code>.</p>
-<p>So the full domain name I&#39;ll set the record on is: <code>_dnslink.juan.benet.ai</code>.</p>
+<pre><code>ipfs get /ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><h3 id="step-1-choose-a-domain-name-to-link-from">Step 1: Choose a domain name to link from.</h3>
+<p>For this tutorial, I&#39;ll use the domain name <code>libp2p.io</code>. You can use whatever domain you control. I happen to be using an <code>ALIAS</code> record on this domain as well (to make the website load directly via the IPFS gateway), so i&#39;ll also have to prefix the domain with <code>_dnslink.</code>.</p>
+<p>So the full domain name I&#39;ll set the record on is: <code>_dnslink.libp2p.io</code>.</p>
 <h3 id="step-2-set-the-dnslink-value-on-a-txt-record">Step 2: Set the DNSLink value on a <code>TXT</code> record.</h3>
 <p>Let&#39;s set the link by creating a <code>TXT</code> record on the domain name. This is going to be specific to your DNS tooling. Unfortunately there is no standard cli tool or web service to set domain names :(. Every registrar and name server has its own web app, and API tooling. (yes, this is widely regarded as a poor state of affairs).</p>
 <p>Consider setting the record, via an imaginary dns cli tool:</p>
-<pre><code>&gt; my-dns-tool set --type=TXT --ttl=60 --domain=benet.ai --name=_dnslink.juan --value=&quot;dnslink=/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm&quot;
-_dnslink.juan.benet.ai TXT 60 dnslink=/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code></pre><p>Or directly in a Digital Ocean prompt:</p>
+<pre><code>&gt; my-dns-tool set --type=TXT --ttl=60 --domain=libp2p.io --name=_dnslink --value=&quot;dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU&quot;
+_dnslink.libp2p.io TXT 60 dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><p>Or directly in a Digital Ocean prompt:</p>
 <p><img src="img/digitalocean.png" alt=""></p>
 <h3 id="step-3-resolve-the-link">Step 3: Resolve the link</h3>
 <p>Now, let&#39;s try resolving the link!</p>
 <p>You can get the link value manually using <code>dig</code> or another dns lookup tool:</p>
-<pre><code>&gt; dig +short TXT _dnslink.juan.benet.ai
-dnslink=/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code></pre><p>Extract the value with <code>sed</code>:</p>
-<pre><code>&gt; dig +short TXT _dnslink.juan.benet.ai | sed -E &#39;s/&quot;dnslink=(.*)&quot;/\1/g&#39;
-/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code></pre><p>Then, you can feed the output of that to ipfs:</p>
-<pre><code>&gt; ipfs ls /ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm
-QmZWKQvxBxS2Jgwu9zp2GZ24YVmotxjCocxUYYHWvbfrHf -     about/
-QmaqLReYSzBFGs9USasbbn8tDUUoeLL2gBxH8zCF1xTqfC -     blog/
-QmVNijwU3fvnin2wapzm4FR3thWw4TEtktsmGYjYY6o97e -     categories/
-Qmcw8pJvc5jg3XJy3PDXWrqWUiKhtyb7ZhrmBLY2gingMr -     contact/
-QmXiDa3352SyZ6Uhwcsm9ixpmHafhTZKGYAdvndQ4iBw84 -     css/
-QmRZJinnF3873kLJo1d8duZPm3gw1vkyiEQLmJPDfCMKQs -     fonts/
-QmUjC5zZaCe6g51X4cyCpC9anDiChg4nYFJkB3eDbneHGo 5036  index.html
-QmSTjkNwkxPvz4P5P4inywSwJjefhpLKozpiR4ogvE826g 20358 index.xml
-QmfQh8N2F6efgbDNptzHr9YpXA9agFYS3aGmwnTmjnnjut -     js/
-QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn -     less/
-QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn -     lib/
-Qmf7TZkJyWYvzfHu3h2xCt5mDQdNHCG9Z1XppnRPr1EuGf -     presskit/
-QmPq7oAcPbybYyTzMXcUvmqeud8cP18k82rPncfATB7gzv -     projects/
-QmbSmmVkh8Ak7BuYFbTsdwNodPF7MrK7y1vcX3sWAko4wU 4715  sitemap.xml
-QmSBCwMH7bUgfHY2PPk68mCnAE887MG9wimYa1j8mAu6BJ -     tags/
-QmQejpio5Rj1chbTjN6hbT4ceRzYNpX2uYQFMUWxLwQSSA -     talks/</code></pre><p>Or chain it all together:</p>
-<pre><code>&gt; dig +short TXT _dnslink.juan.benet.ai | sed -E &#39;s/&quot;dnslink=(.*)&quot;/\1/g&#39; | ipfs ls
-QmZWKQvxBxS2Jgwu9zp2GZ24YVmotxjCocxUYYHWvbfrHf -     about/
-QmaqLReYSzBFGs9USasbbn8tDUUoeLL2gBxH8zCF1xTqfC -     blog/
-QmVNijwU3fvnin2wapzm4FR3thWw4TEtktsmGYjYY6o97e -     categories/
-Qmcw8pJvc5jg3XJy3PDXWrqWUiKhtyb7ZhrmBLY2gingMr -     contact/
-QmXiDa3352SyZ6Uhwcsm9ixpmHafhTZKGYAdvndQ4iBw84 -     css/
-QmRZJinnF3873kLJo1d8duZPm3gw1vkyiEQLmJPDfCMKQs -     fonts/
-QmUjC5zZaCe6g51X4cyCpC9anDiChg4nYFJkB3eDbneHGo 5036  index.html
-QmSTjkNwkxPvz4P5P4inywSwJjefhpLKozpiR4ogvE826g 20358 index.xml
-QmfQh8N2F6efgbDNptzHr9YpXA9agFYS3aGmwnTmjnnjut -     js/
-QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn -     less/
-QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn -     lib/
-Qmf7TZkJyWYvzfHu3h2xCt5mDQdNHCG9Z1XppnRPr1EuGf -     presskit/
-QmPq7oAcPbybYyTzMXcUvmqeud8cP18k82rPncfATB7gzv -     projects/
-QmbSmmVkh8Ak7BuYFbTsdwNodPF7MrK7y1vcX3sWAko4wU 4715  sitemap.xml
-QmSBCwMH7bUgfHY2PPk68mCnAE887MG9wimYa1j8mAu6BJ -     tags/
-QmQejpio5Rj1chbTjN6hbT4ceRzYNpX2uYQFMUWxLwQSSA -     talks/</code></pre><h2 id="usage-examples">Usage Examples</h2>
+<pre><code>&gt; dig +short TXT _dnslink.libp2p.io
+dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><p>Extract the value with <code>sed</code>:</p>
+<pre><code>&gt; dig +short TXT _dnslink.libp2p.io | sed -E &#39;s/&quot;dnslink=(.*)&quot;/\1/g&#39;
+/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><p>Then, you can feed the output of that to ipfs:</p>
+<pre><code>&gt; ipfs ls /ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
+QmeotoX2bE7fVgMvUS9ZXL2RMoZQHiuQVZZR1Hts3JVmUT 265   _previous-versions
+QmP5JpytsFEQ5Y8oQ875kPrdA1dAtyXAH6U8eKbTUbptNd -     bundles/
+QmcRUrMyFePBNnvoqZB5Uk7y6aoWGoUW6EB8JWUxztKTma -     categories/
+QmeVM9YZStiFcjjQYpzJ1KWJsaFGcRWaeMAymSfLydu9mh -     css/
+QmRJjyE1Bi64AD7MSpt4xKHaiWXq7WGAne8KTzn7UyYeWq -     fonts/
+Qma6Eg1JMAPjBg827ywDG1nx4TBwxYWxQxeb1CXUkDnrHk -     img/
+QmdB9xXJHNXnaiikCXVpomHriNGXwvSUqdkC1krtFq4WWW -     implementations/
+QmXCq4KMZC4mdxovpnrHU9K92LVBLSExLEsrvwTGNEswnv 62880 index.html
+QmQNjTorGWRTqEwctqmdBfuBBRTj8vQD3iGjNNCu7vA5i9 3138  index.xml
+QmPsosZeKZTUcBkcucPtPnk3fF4ia4vBdJ6str9CRr6VTQ -     js/
+QmYBUY8Y8uXEAPJSvMTdpfGoL8bujNo4RKoxkCnnKXoTD9 -     media/
+QmUZ23DEtL3aUFaLgCEQv5yEDigGP2ajioXPVZZ6S7DYVa 561   sitemap.xml
+QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>Or chain it all together:</p>
+<pre><code>&gt; dig +short TXT _dnslink.libp2p.io | sed -E &#39;s/&quot;dnslink=(.*)&quot;/\1/g&#39; | ipfs ls
+QmeotoX2bE7fVgMvUS9ZXL2RMoZQHiuQVZZR1Hts3JVmUT 265   _previous-versions
+QmP5JpytsFEQ5Y8oQ875kPrdA1dAtyXAH6U8eKbTUbptNd -     bundles/
+QmcRUrMyFePBNnvoqZB5Uk7y6aoWGoUW6EB8JWUxztKTma -     categories/
+QmeVM9YZStiFcjjQYpzJ1KWJsaFGcRWaeMAymSfLydu9mh -     css/
+QmRJjyE1Bi64AD7MSpt4xKHaiWXq7WGAne8KTzn7UyYeWq -     fonts/
+Qma6Eg1JMAPjBg827ywDG1nx4TBwxYWxQxeb1CXUkDnrHk -     img/
+QmdB9xXJHNXnaiikCXVpomHriNGXwvSUqdkC1krtFq4WWW -     implementations/
+QmXCq4KMZC4mdxovpnrHU9K92LVBLSExLEsrvwTGNEswnv 62880 index.html
+QmQNjTorGWRTqEwctqmdBfuBBRTj8vQD3iGjNNCu7vA5i9 3138  index.xml
+QmPsosZeKZTUcBkcucPtPnk3fF4ia4vBdJ6str9CRr6VTQ -     js/
+QmYBUY8Y8uXEAPJSvMTdpfGoL8bujNo4RKoxkCnnKXoTD9 -     media/
+QmUZ23DEtL3aUFaLgCEQv5yEDigGP2ajioXPVZZ6S7DYVa 561   sitemap.xml
+QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><h2 id="usage-examples">Usage Examples</h2>
 <h3 id="example-user-friendly-name-resolution-within-ipfs">Example: User-friendly name resolution within IPFS</h3>
 <p>IPFS has DNSLink resolution built in though, so you could just do the following to achieve the same result as in the tutorial above.</p>
 <p>Given this dnslink:</p>
-<pre><code>&gt; dig +short TXT _dnslink.juan.benet.ai
-dnslink=/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code></pre><p>ipfs uses DNSLink to resolve it natively:</p>
-<pre><code>&gt; ipfs ls /ipns/juan.benet.ai
-QmZWKQvxBxS2Jgwu9zp2GZ24YVmotxjCocxUYYHWvbfrHf -     about/
-QmaqLReYSzBFGs9USasbbn8tDUUoeLL2gBxH8zCF1xTqfC -     blog/
-QmVNijwU3fvnin2wapzm4FR3thWw4TEtktsmGYjYY6o97e -     categories/
-Qmcw8pJvc5jg3XJy3PDXWrqWUiKhtyb7ZhrmBLY2gingMr -     contact/
-QmXiDa3352SyZ6Uhwcsm9ixpmHafhTZKGYAdvndQ4iBw84 -     css/
-QmRZJinnF3873kLJo1d8duZPm3gw1vkyiEQLmJPDfCMKQs -     fonts/
-QmUjC5zZaCe6g51X4cyCpC9anDiChg4nYFJkB3eDbneHGo 5036  index.html
-QmSTjkNwkxPvz4P5P4inywSwJjefhpLKozpiR4ogvE826g 20358 index.xml
-QmfQh8N2F6efgbDNptzHr9YpXA9agFYS3aGmwnTmjnnjut -     js/
-QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn -     less/
-QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn -     lib/
-Qmf7TZkJyWYvzfHu3h2xCt5mDQdNHCG9Z1XppnRPr1EuGf -     presskit/
-QmPq7oAcPbybYyTzMXcUvmqeud8cP18k82rPncfATB7gzv -     projects/
-QmbSmmVkh8Ak7BuYFbTsdwNodPF7MrK7y1vcX3sWAko4wU 4715  sitemap.xml
-QmSBCwMH7bUgfHY2PPk68mCnAE887MG9wimYa1j8mAu6BJ -     tags/
-QmQejpio5Rj1chbTjN6hbT4ceRzYNpX2uYQFMUWxLwQSSA -     talks/</code></pre><p>You can find out more at the <a href="https://docs.ipfs.io/guides/concepts/dnslink/">IPFS DNSLink documentation</a>.</p>
+<pre><code>&gt; dig +short TXT _dnslink.libp2p.io
+dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><p>ipfs uses DNSLink to resolve it natively:</p>
+<pre><code>&gt; ipfs ls /ipns/libp2p.io
+QmeotoX2bE7fVgMvUS9ZXL2RMoZQHiuQVZZR1Hts3JVmUT 265   _previous-versions
+QmP5JpytsFEQ5Y8oQ875kPrdA1dAtyXAH6U8eKbTUbptNd -     bundles/
+QmcRUrMyFePBNnvoqZB5Uk7y6aoWGoUW6EB8JWUxztKTma -     categories/
+QmeVM9YZStiFcjjQYpzJ1KWJsaFGcRWaeMAymSfLydu9mh -     css/
+QmRJjyE1Bi64AD7MSpt4xKHaiWXq7WGAne8KTzn7UyYeWq -     fonts/
+Qma6Eg1JMAPjBg827ywDG1nx4TBwxYWxQxeb1CXUkDnrHk -     img/
+QmdB9xXJHNXnaiikCXVpomHriNGXwvSUqdkC1krtFq4WWW -     implementations/
+QmXCq4KMZC4mdxovpnrHU9K92LVBLSExLEsrvwTGNEswnv 62880 index.html
+QmQNjTorGWRTqEwctqmdBfuBBRTj8vQD3iGjNNCu7vA5i9 3138  index.xml
+QmPsosZeKZTUcBkcucPtPnk3fF4ia4vBdJ6str9CRr6VTQ -     js/
+QmYBUY8Y8uXEAPJSvMTdpfGoL8bujNo4RKoxkCnnKXoTD9 -     media/
+QmUZ23DEtL3aUFaLgCEQv5yEDigGP2ajioXPVZZ6S7DYVa 561   sitemap.xml
+QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You can find out more at the <a href="https://docs.ipfs.io/guides/concepts/dnslink/">IPFS DNSLink documentation</a>.</p>
 <h3 id="example-ipfs-gateway">Example: IPFS Gateway</h3>
-<p>You can also just check it out on the web. The IPFS gateway resolves DNSLink automatically too. Check it out at <a href="https://ipfs.io/ipns/juan.benet.ai">https://ipfs.io/ipns/juan.benet.ai</a></p>
-<p><strong>How does that work?</strong> The gateway takes the part after <code>/ipns/</code>, if it is a DNS domain name, it checks for a DNSLink at either the domain name, or <code>_dnslink.</code> prefixed version. In this case it finds our DNSLink at <code>_dnslink.juan.benet.ai</code> and resolves that.</p>
-<p><strong>But what about <a href="http://juan.benet.ai">http://juan.benet.ai</a>?</strong> Yes, <a href="http://juan.benet.ai">http://juan.benet.ai</a> also works, that uses a combination of DNSLink, a <code>CNAME</code> record in <code>juan.benet.ai</code>, and the ipfs gateway. Basically:</p>
+<p>You can also just check it out on the web. The IPFS gateway resolves DNSLink automatically too. Check it out at <a href="https://ipfs.io/ipns/libp2p.io">https://ipfs.io/ipns/libp2p.io</a></p>
+<p><strong>How does that work?</strong> The gateway takes the part after <code>/ipns/</code>, if it is a DNS domain name, it checks for a DNSLink at either the domain name, or <code>_dnslink.</code> prefixed version. In this case it finds our DNSLink at <code>_dnslink.libp2p.io</code> and resolves that.</p>
+<p><strong>But what about <a href="http://libp2p.io">http://libp2p.io</a>?</strong> Yes, <a href="http://libp2p.io">http://libp2p.io</a> also works, that uses a combination of DNSLink, a <code>ALIAS</code> record in <code>libp2p.io</code>, and the ipfs gateway. Basically:</p>
 <ol>
-<li>the browser first checks for <code>A</code> records for <code>juan.benet.ai</code>. dns finds a <code>CNAME</code> to <code>gateway.ipfs.io</code>, and those <code>A</code> records:<pre><code> &gt; dig A juan.benet.ai
- juan.benet.ai.          59      IN      CNAME   gateway.ipfs.io.
+<li>the browser first checks for <code>A</code> records for <code>libp2p.io</code>. dns finds an <code>ALIAS</code> to <code>gateway-int.ipfs.io</code>, and those <code>A</code> records:<pre><code> &gt; dig A libp2p.io
  gateway.ipfs.io.        119     IN      A       209.94.90.1</code></pre></li>
-<li>the browser then connects to <code>http://209.94.90.1</code>, using a <code>HOST: juan.benet.ai</code> HTTP header.</li>
-<li>the ipfs gateway reads the <code>HOST: juan.benet.ai</code> header, and -- recognizing a DNS name -- checks for an associated DNSLink at either <code>juan.benet.ai</code> or <code>_dnslink.juan.benet.ai</code>.<pre><code> &gt; dig +short TXT _dnslink.juan.benet.ai
- &quot;dnslink=/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm&quot;</code></pre></li>
-<li>The gateway finds the link at <code>_dnslink.juan.benet.ai</code> leading to <code>/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code>.</li>
-<li>The gateway fetches the IPFS web content at <code>/ipfs/QmYHq32XLpnyBdHBxwxNtQwoPJNqAfgTTTZdq1nmD581nm</code> and serves it to the browser.</li>
-<li>The browser renders it happily, preserving the original pretty name of <code>http://juan.benet.ai</code></li>
+<li>the browser then connects to <code>http://209.94.90.1</code>, using a <code>HOST: libp2p.io</code> HTTP header.</li>
+<li>the ipfs gateway reads the <code>HOST: libp2p.io</code> header, and -- recognizing a DNS name -- checks for an associated DNSLink at either <code>libp2p.io</code> or <code>_dnslink.libp2p.io</code>.<pre><code> &gt; dig +short TXT _dnslink.libp2p.io
+ &quot;dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU&quot;</code></pre></li>
+<li>The gateway finds the link at <code>_dnslink.libp2p.io</code> leading to <code>/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code>.</li>
+<li>The gateway fetches the IPFS web content at <code>/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code> and serves it to the browser.</li>
+<li>The browser renders it happily, preserving the original pretty name of <code>http://libp2p.io</code></li>
 </ol>
 <p><strong>Note:</strong> The lack of <code>https</code> here is just my own lack of TLS certificate. You can totally use TLS, DNSLink, and the IPFS Gateway to serve secure websites with IPFS to the browser.</p>
 <h3 id="example-ipfs-companion">Example: IPFS Companion</h3>
