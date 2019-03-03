@@ -1,7 +1,5 @@
 var Mustache = require('mustache')
-var Remarkable = require('remarkable')
 var marked = require('marked')
-var md = new Remarkable({html: true})
 var mdtoc = require('markdown-toc')
 var fs = require('fs')
 
