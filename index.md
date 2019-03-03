@@ -176,7 +176,7 @@ You can also just check it out on the web. The IPFS gateway resolves DNSLink aut
 
 **How does that work?** The gateway takes the part after `/ipns/`, if it is a DNS domain name, it checks for a DNSLink at either the domain name, or `_dnslink.` prefixed version. In this case it finds our DNSLink at `_dnslink.libp2p.io` and resolves that.
 
-**But what about [http://libp2p.io](http://libp2p.io)?** Yes, http://libp2p.io also works, that uses a combination of DNSLink, a `ALIAS` record in `libp2p.io`, and the ipfs gateway. Basically:
+**But what about [https://libp2p.io](https://libp2p.io)?** Yes, https://libp2p.io also works, that uses a combination of DNSLink, a `ALIAS` record in `libp2p.io`, and the ipfs gateway. Basically:
 1. the browser first checks for `A` records for `libp2p.io`. dns finds an `ALIAS` to `gateway-int.ipfs.io`, and those `A` records:
     ```
     > dig A libp2p.io
@@ -190,9 +190,8 @@ You can also just check it out on the web. The IPFS gateway resolves DNSLink aut
     ```
 4. The gateway finds the link at `_dnslink.libp2p.io` leading to `/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU`.
 5. The gateway fetches the IPFS web content at `/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU` and serves it to the browser.
-6. The browser renders it happily, preserving the original pretty name of `http://libp2p.io`
+6. The browser renders it happily, preserving the original pretty name of `https://libp2p.io`
 
-**Note:** The lack of `https` here is just my own lack of TLS certificate. You can totally use TLS, DNSLink, and the IPFS Gateway to serve secure websites with IPFS to the browser.
 
 ### Example: IPFS Companion
 

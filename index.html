@@ -365,7 +365,7 @@ QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You ca
 <h3 id="example-ipfs-gateway">Example: IPFS Gateway</h3>
 <p>You can also just check it out on the web. The IPFS gateway resolves DNSLink automatically too. Check it out at <a href="https://ipfs.io/ipns/libp2p.io">https://ipfs.io/ipns/libp2p.io</a></p>
 <p><strong>How does that work?</strong> The gateway takes the part after <code>/ipns/</code>, if it is a DNS domain name, it checks for a DNSLink at either the domain name, or <code>_dnslink.</code> prefixed version. In this case it finds our DNSLink at <code>_dnslink.libp2p.io</code> and resolves that.</p>
-<p><strong>But what about <a href="http://libp2p.io">http://libp2p.io</a>?</strong> Yes, <a href="http://libp2p.io">http://libp2p.io</a> also works, that uses a combination of DNSLink, a <code>ALIAS</code> record in <code>libp2p.io</code>, and the ipfs gateway. Basically:</p>
+<p><strong>But what about <a href="https://libp2p.io">https://libp2p.io</a>?</strong> Yes, <a href="https://libp2p.io">https://libp2p.io</a> also works, that uses a combination of DNSLink, a <code>ALIAS</code> record in <code>libp2p.io</code>, and the ipfs gateway. Basically:</p>
 <ol>
 <li>the browser first checks for <code>A</code> records for <code>libp2p.io</code>. dns finds an <code>ALIAS</code> to <code>gateway-int.ipfs.io</code>, and those <code>A</code> records:<pre><code> &gt; dig A libp2p.io
  gateway.ipfs.io.        119     IN      A       209.94.90.1</code></pre></li>
@@ -374,9 +374,8 @@ QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You ca
  &quot;dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU&quot;</code></pre></li>
 <li>The gateway finds the link at <code>_dnslink.libp2p.io</code> leading to <code>/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code>.</li>
 <li>The gateway fetches the IPFS web content at <code>/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code> and serves it to the browser.</li>
-<li>The browser renders it happily, preserving the original pretty name of <code>http://libp2p.io</code></li>
+<li>The browser renders it happily, preserving the original pretty name of <code>https://libp2p.io</code></li>
 </ol>
-<p><strong>Note:</strong> The lack of <code>https</code> here is just my own lack of TLS certificate. You can totally use TLS, DNSLink, and the IPFS Gateway to serve secure websites with IPFS to the browser.</p>
 <h3 id="example-ipfs-companion">Example: IPFS Companion</h3>
 <p>Similar to the IPFS Gateway, <a href="https://github.com/ipfs-shipyard/ipfs-companion">IPFS Companion</a> uses DNSLink natively within the browser to resolve IPFS web content. IPFS Companion has a feature that tests domain names for the presence of dnslink <code>TXT</code> records, and if it finds them, then it serves content via IPFS instead.</p>
 <p>You can find out more about how it works at <a href="https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md">IPFS Companion&#39;s DNSLink documentation</a>.</p>
