@@ -1,8 +1,11 @@
-# DNSLink - linking things with dns
+
+# DNSLink - linking content and services with dns
 
 DNSLink is a very simple protocol to link content and services directly from DNS.
 
 DNSLink leverages the powerful distributed architecture of DNS for a variety of systems that require internet scale mutable names or pointers.
+
+![](img/dns-query.png)
 
 ## How does it work?
 
@@ -232,10 +235,36 @@ https://github.com/ipfs/dnslink-deploy - `dnslink-deploy` a tool for setting DNS
 
 ## Known Users
 
-- IPFS
-- IPFS Gateway
-- IPFS Companion
-- _add your system here_
+### Systems
+
+#### IPFS
+
+IPFS is a heavy user of DNSLink. It is used in the core API, as part of IPNS, the name system IPFS uses. It is also used in a variety of tools around IPFS.
+
+Learn more at the [IPFS and DNSLink documentation](https://docs.ipfs.io/guides/concepts/dnslink/).
+
+#### IPFS Gateway
+
+The IPFS Gateway resolves DNSLinks automatically.
+
+#### IPFS Companion
+
+[IPFS Companion](https://github.com/ipfs-shipyard/ipfs-companion) can resolve DNSLinks automatically. See more in the [IPFS Companion documentaion](https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md).
+
+#### add yours here
+
+Add yours on github.
+
+### Websites
+
+Many websites use DNSLink and IPFS. Check some of them out:
+
+- https://ipfs.io
+- https://filecoin.io
+- https://protocol.ai
+- https://libp2p.io
+- https://multiformats.io
+- _add yours here_
 
 ## Best Practices
 

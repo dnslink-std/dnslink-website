@@ -238,7 +238,17 @@ ul {
 </ul>
 </li>
 <li><a href="#docs">Docs</a></li>
-<li><a href="#known-users">Known Users</a></li>
+<li><a href="#known-users">Known Users</a><ul>
+<li><a href="#systems">Systems</a><ul>
+<li><a href="#ipfs">IPFS</a></li>
+<li><a href="#ipfs-gateway">IPFS Gateway</a></li>
+<li><a href="#ipfs-companion">IPFS Companion</a></li>
+<li><a href="#add-yours-here">add yours here</a></li>
+</ul>
+</li>
+<li><a href="#websites">Websites</a></li>
+</ul>
+</li>
 <li><a href="#best-practices">Best Practices</a><ul>
 <li><a href="#set-a-low-ttl-in-the-txt-record">Set a low <code>TTL</code> in the <code>TXT</code> record.</a></li>
 </ul>
@@ -261,9 +271,10 @@ ul {
 </div>
 
 <div id="container" class="container">
-  <h1 id="dnslink---linking-things-with-dns">DNSLink - linking things with dns</h1>
+  <h1 id="dnslink---linking-content-and-services-with-dns">DNSLink - linking content and services with dns</h1>
 <p>DNSLink is a very simple protocol to link content and services directly from DNS.</p>
 <p>DNSLink leverages the powerful distributed architecture of DNS for a variety of systems that require internet scale mutable names or pointers.</p>
+<p><img src="img/dns-query.png" alt=""></p>
 <h2 id="how-does-it-work">How does it work?</h2>
 <p>With DNSLink, you can store a link using any DNS domain name. First, put the link in a <code>TXT</code> record at a specific subdomain. Then, you can resolve the link from any program by looking up the TXT record value. Your programs and systems can parse out the record value, and follow the link wherever it may go. Yes, it is that simple.</p>
 <h3 id="dnslink-format">DNSLink Format</h3>
@@ -395,11 +406,25 @@ QmQejpio5Rj1chbTjN6hbT4ceRzYNpX2uYQFMUWxLwQSSA -     talks/</code></pre><p>You c
 <li>Explanation of how DNSLink and the IPFS Gateway works: <a href="https://www.youtube.com/watch?v=YxKZFeDvcBs">https://www.youtube.com/watch?v=YxKZFeDvcBs</a></li>
 </ul>
 <h2 id="known-users">Known Users</h2>
+<h3 id="systems">Systems</h3>
+<h4 id="ipfs">IPFS</h4>
+<p>IPFS is a heavy user of DNSLink. It is used in the core API, as part of IPNS, the name system IPFS uses. It is also used in a variety of tools around IPFS.</p>
+<p>Learn more at the <a href="https://docs.ipfs.io/guides/concepts/dnslink/">IPFS and DNSLink documentation</a>.</p>
+<h4 id="ipfs-gateway">IPFS Gateway</h4>
+<p>The IPFS Gateway resolves DNSLinks automatically.</p>
+<h4 id="ipfs-companion">IPFS Companion</h4>
+<p><a href="https://github.com/ipfs-shipyard/ipfs-companion">IPFS Companion</a> can resolve DNSLinks automatically. See more in the <a href="https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md">IPFS Companion documentaion</a>.</p>
+<h4 id="add-yours-here">add yours here</h4>
+<p>Add yours on github.</p>
+<h3 id="websites">Websites</h3>
+<p>Many websites use DNSLink and IPFS. Check some of them out:</p>
 <ul>
-<li>IPFS</li>
-<li>IPFS Gateway</li>
-<li>IPFS Companion</li>
-<li><em>add your system here</em></li>
+<li><a href="https://ipfs.io">https://ipfs.io</a></li>
+<li><a href="https://filecoin.io">https://filecoin.io</a></li>
+<li><a href="https://protocol.ai">https://protocol.ai</a></li>
+<li><a href="https://libp2p.io">https://libp2p.io</a></li>
+<li><a href="https://multiformats.io">https://multiformats.io</a></li>
+<li><em>add yours here</em></li>
 </ul>
 <h2 id="best-practices">Best Practices</h2>
 <h3 id="set-a-low-ttl-in-the-txt-record">Set a low <code>TTL</code> in the <code>TXT</code> record.</h3>
