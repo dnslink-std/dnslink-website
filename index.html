@@ -232,9 +232,11 @@ ul {
 </ul>
 </li>
 <li><a href="#tools">Tools</a><ul>
+<li><a href="#go-ipfs">go-ipfs</a></li>
 <li><a href="#go-dnslink">go-dnslink</a></li>
 <li><a href="#js-dnslink">js-dnslink</a></li>
 <li><a href="#dnslink-deploy">dnslink-deploy</a></li>
+<li><a href="#ipfs-deploy">ipfs-deploy</a></li>
 </ul>
 </li>
 <li><a href="#docs">Docs</a></li>
@@ -256,7 +258,7 @@ ul {
 <li><a href="#faq">FAQ</a><ul>
 <li><a href="#is-there-an-ietf-rfc-spec">Is there an IETF RFC spec?</a></li>
 <li><a href="#can-i-use-dnslink-in-non-dns-systems">Can I use DNSLink in non-DNS systems?</a></li>
-<li><a href="#why-not-just-use-_dnslinkdomain-always-instead-of-both-_dnslinkdomain-and-domain">Why not just use <code>_dnslink.domain</code> always, instead of both <code>_dnslink.domain</code> and <code>domain</code>?</a></li>
+<li><a href="#why-use-_dnslinkdomain-instead-of-domain">Why use <code>_dnslink.domain</code> instead of <code>domain</code>?</a></li>
 <li><a href="#why-use-the-dnslink-prefix-in-the-txt-value">Why use the <code>dnslink=</code> prefix in the <code>TXT</code> value?</a></li>
 <li><a href="#why-not-use-other-dns-record-types-like-srv">Why not use other DNS record types, like <code>SRV</code>?</a></li>
 <li><a href="#why-not-just-extend-dns-with-more-record-types">Why not just extend DNS with more record types?</a></li>
@@ -299,11 +301,11 @@ dnslink=/dnslink/test4.dnslink.dev</code></pre><p>Should go on to resolve</p>
 <pre><code>&gt; dig +short TXT _dnslink.test4.dnslink.dev
 dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><h2 id="tutorial">Tutorial</h2>
 <h3 id="step-0-find-something-to-link-to">Step 0: Find something to link to.</h3>
-<p>In this tutorial, we&#39;ll link to <a href="https://libp2p.io">the libp2p website</a>, on <a href="https://ipfs.io">IPFS</a>. The website has the IPFS address:</p>
+<p>In this tutorial, we&#39;ll link to <a href="https://libp2p.io">the libp2p website</a>, on <a href="https://ipfs.io">IPFS</a>. At the time of writing this, the website had the IPFS address:</p>
 <pre><code>/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><p>You can view this on the global IPFS gateway: <a href="https://ipfs.io/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU">https://ipfs.io/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</a></p>
 <p>And even download it with ipfs:</p>
 <pre><code>ipfs get /ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><h3 id="step-1-choose-a-domain-name-to-link-from">Step 1: Choose a domain name to link from.</h3>
-<p>For this tutorial, I&#39;ll use the domain name <code>libp2p.io</code>. You can use whatever domain you control. I happen to be using an <code>ALIAS</code> record on this domain as well (to make the website load directly via the IPFS gateway), so i&#39;ll also have to prefix the domain with <code>_dnslink.</code>.</p>
+<p>For this tutorial, I&#39;ll use the domain name <code>libp2p.io</code>. You can use whatever domain you control. I happen to be using an <code>ALIAS</code> record on this domain as well (to make the website load directly via the IPFS gateway), but that is not a problem: the convention to prefix the domain with <code>_dnslink.</code> allows for complex DNS setups like this.</p>
 <p>So the full domain name I&#39;ll set the record on is: <code>_dnslink.libp2p.io</code>.</p>
 <h3 id="step-2-set-the-dnslink-value-on-a-txt-record">Step 2: Set the DNSLink value on a <code>TXT</code> record.</h3>
 <p>Let&#39;s set the link by creating a <code>TXT</code> record on the domain name. This is going to be specific to your DNS tooling. Unfortunately there is no standard cli tool or web service to set domain names :(. Every registrar and name server has its own web app, and API tooling. (yes, this is widely regarded as a poor state of affairs).</p>
@@ -364,9 +366,9 @@ QmQNjTorGWRTqEwctqmdBfuBBRTj8vQD3iGjNNCu7vA5i9 3138  index.xml
 QmPsosZeKZTUcBkcucPtPnk3fF4ia4vBdJ6str9CRr6VTQ -     js/
 QmYBUY8Y8uXEAPJSvMTdpfGoL8bujNo4RKoxkCnnKXoTD9 -     media/
 QmUZ23DEtL3aUFaLgCEQv5yEDigGP2ajioXPVZZ6S7DYVa 561   sitemap.xml
-QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You can find out more at the <a href="https://docs.ipfs.io/guides/concepts/dnslink/">IPFS DNSLink documentation</a>.</p>
+QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You can find out more at the <a href="https://docs.ipfs.io/concepts/dnslink/">IPFS DNSLink documentation</a>.</p>
 <h3 id="example-ipfs-gateway">Example: IPFS Gateway</h3>
-<p>You can also just check it out on the web. The IPFS gateway resolves DNSLink automatically too. Check it out at <a href="https://ipfs.io/ipns/libp2p.io">https://ipfs.io/ipns/libp2p.io</a></p>
+<p>You can also just check it out on the web. The IPFS gateway resolves DNSLink automatically too. Check it out at <a href="https://ipfs.io/ipns/libp2p.io">https://ipfs.io/ipns/libp2p.io</a> or <a href="https://dweb.link/ipns/libp2p.io">https://dweb.link/ipns/libp2p.io</a> which will provide proper origin isolation for use in browsers.</p>
 <p><strong>How does that work?</strong> The gateway takes the part after <code>/ipns/</code>, if it is a DNS domain name, it checks for a DNSLink at either the domain name, or <code>_dnslink.</code> prefixed version. In this case it finds our DNSLink at <code>_dnslink.libp2p.io</code> and resolves that.</p>
 <p><strong>But what about <a href="https://libp2p.io">https://libp2p.io</a>?</strong> Yes, <a href="https://libp2p.io">https://libp2p.io</a> also works, that uses a combination of DNSLink, a <code>ALIAS</code> record in <code>libp2p.io</code>, and the ipfs gateway. Basically:</p>
 <ol>
@@ -384,16 +386,22 @@ QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You ca
 <p>You can find out more about how it works at <a href="https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md">IPFS Companion&#39;s DNSLink documentation</a>.</p>
 <h2 id="tools">Tools</h2>
 <p>There are a number of tools related to DNSLink.</p>
+<h4 id="go-ipfs">go-ipfs</h4>
+<p>go-ipfs has built-in support for resolving DNSLinks:</p>
+<pre><code>$ ipfs name resolve -r /ipns/libp2p.io
+/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU</code></pre><p>One can also run HTTP Gateway capable of hosting DNSLink websites. See <a href="https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes">examples</a>.</p>
 <h4 id="go-dnslink">go-dnslink</h4>
 <p><a href="https://github.com/ipfs/go-dnslink">https://github.com/ipfs/go-dnslink</a> - dnslink resolution in go (used by <a href="https://github.com/ipfs/go-ipfs">go-ipfs</a>)</p>
 <h4 id="js-dnslink">js-dnslink</h4>
 <p><a href="https://www.npmjs.com/package/dnslink">https://www.npmjs.com/package/dnslink</a> - dnslink resolution in javascript</p>
 <h4 id="dnslink-deploy">dnslink-deploy</h4>
 <p><a href="https://github.com/ipfs/dnslink-deploy">https://github.com/ipfs/dnslink-deploy</a> - <code>dnslink-deploy</code> a tool for setting DNSLinks on Digital Ocean (and maybe more someday others):</p>
+<h4 id="ipfs-deploy">ipfs-deploy</h4>
+<p><a href="https://github.com/ipfs-shipyard/ipfs-deploy">https://github.com/ipfs-shipyard/ipfs-deploy</a> - upload static website to IPFS pinning services and optionally update DNS (Cloudflare, DNSSimple)</p>
 <h2 id="docs">Docs</h2>
 <ul>
-<li>IPFS and DNSLink: <a href="https://docs.ipfs.io/guides/concepts/dnslink/">https://docs.ipfs.io/guides/concepts/dnslink/</a></li>
-<li>IPFS Companion and DNSLink: <a href="https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md">https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md</a></li>
+<li>IPFS and DNSLink: <a href="https://docs.ipfs.io/concepts/dnslink/">https://docs.ipfs.io/concepts/dnslink/</a> </li>
+<li>IPFS Companion and DNSLink: <a href="https://docs.ipfs.io/how-to/dnslink-companion/">https://docs.ipfs.io/how-to/dnslink-companion/</a></li>
 <li>DNSLink in Cloudflare&#39;s Gateway: <a href="https://developers.cloudflare.com/distributed-web/ipfs-gateway/connecting-website/">https://developers.cloudflare.com/distributed-web/ipfs-gateway/connecting-website/</a></li>
 <li>Explanation of how DNSLink and the IPFS Gateway works: <a href="https://www.youtube.com/watch?v=YxKZFeDvcBs">https://www.youtube.com/watch?v=YxKZFeDvcBs</a></li>
 </ul>
@@ -401,11 +409,11 @@ QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You ca
 <h3 id="systems">Systems</h3>
 <h4 id="ipfs">IPFS</h4>
 <p>IPFS is a heavy user of DNSLink. It is used in the core API, as part of IPNS, the name system IPFS uses. It is also used in a variety of tools around IPFS.</p>
-<p>Learn more at the <a href="https://docs.ipfs.io/guides/concepts/dnslink/">IPFS and DNSLink documentation</a>.</p>
+<p>Learn more at the <a href="https://docs.ipfs.io/concepts/dnslink/">IPFS and DNSLink documentation</a>.</p>
 <h4 id="ipfs-gateway">IPFS Gateway</h4>
-<p>The IPFS Gateway resolves DNSLinks automatically.</p>
+<p>The IPFS Gateway resolves DNSLinks automatically. See <a href="https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes">gateway recipes</a>.</p>
 <h4 id="ipfs-companion">IPFS Companion</h4>
-<p><a href="https://github.com/ipfs-shipyard/ipfs-companion">IPFS Companion</a> can resolve DNSLinks automatically. See more in the <a href="https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md">IPFS Companion documentaion</a>.</p>
+<p><a href="https://github.com/ipfs-shipyard/ipfs-companion">IPFS Companion</a> can resolve DNSLinks automatically. See more in the <a href="https://docs.ipfs.io/how-to/dnslink-companion/">IPFS Companion documentaion</a>.</p>
 <h4 id="add-yours-here">add yours here</h4>
 <p>Add yours on github.</p>
 <h3 id="websites">Websites</h3>
@@ -425,9 +433,11 @@ QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/</code></pre><p>You ca
 <h4 id="is-there-an-ietf-rfc-spec">Is there an IETF RFC spec?</h4>
 <p>Not yet. We should write one.</p>
 <h4 id="can-i-use-dnslink-in-non-dns-systems">Can I use DNSLink in non-DNS systems?</h4>
-<p>Yes absolutely. You can use these formats wherever you want, and map the functionality to that service. We would say that&#39;s a derivative system though, and not DNSLink proper. For example, you can use DNSLink with the Ethereum Name System (ENS), and use the same value format. One can still support looking but both <code>name.ens</code> and <code>_dnslink.name.ens</code>. But since ENS doesn&#39;t use records (like <code>TXT</code>), that part would be obviated. If you use DNSLink for something cool like this, be sure to add it to the <a href="#Users">Users</a> section of this doc.</p>
-<h4 id="why-not-just-use-_dnslinkdomain-always-instead-of-both-_dnslinkdomain-and-domain">Why not just use <code>_dnslink.domain</code> always, instead of both <code>_dnslink.domain</code> and <code>domain</code>?</h4>
-<p>Some domain names are very long. Since DNS has a character limit, it could be that the domain name is far too long to support adding the <code>_dnslink.</code> prefix. We also historically started with supporting it in the normal domain, and only found the issue with <code>CNAME</code> and <code>ALIAS</code> records later on.</p>
+<p>Yes absolutely. For example, you can use DNSLink to resolve names from Ethereum Name System (ENS) thanks to DNS-interop provided at <a href="https://eth.link">https://eth.link</a>. If you use DNSLink for something cool like this, be sure to add it to the <a href="#Users">Users</a> section of this doc.</p>
+<h4 id="why-use-_dnslinkdomain-instead-of-domain">Why use <code>_dnslink.domain</code> instead of <code>domain</code>?</h4>
+<p><code>_dnslink.domain</code> does not conflict with <code>CNAME</code> and <code>ALIAS</code> records, and is better for operations security: enables you to set up an automated publishing or delegate control over your DNSLink records to a third party without giving away full control over the original DNS zone.</p>
+<p><code>TXT</code> record on <code>domain</code> is deprecated and resolved by some software only for legacy reasons: we historically started with supporting records on the normal domain, and only found the issue with <code>CNAME</code> and <code>ALIAS</code> records later on. Those problems are absent when <code>_dnslink.domain</code> is used.</p>
+<p>Rule of thumb: always use <code>_dnslink.domain</code>.</p>
 <h4 id="why-use-the-dnslink-prefix-in-the-txt-value">Why use the <code>dnslink=</code> prefix in the <code>TXT</code> value?</h4>
 <p>The prefix <code>dnslink=</code> is there to signal that this <code>TXT</code> record value is a DNSLink. This is important because many systems use TXT records, and there is a convention of storing multiple space separated values in a single <code>TXT</code> record. Following this format allows your DNSLink resolver to parse through whatever is in the <code>TXT</code> record and use the first entry prefixed with <code>dnslink=</code>.</p>
 <h4 id="why-not-use-other-dns-record-types-like-srv">Why not use other DNS record types, like <code>SRV</code>?</h4>
