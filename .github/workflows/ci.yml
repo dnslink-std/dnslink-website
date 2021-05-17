@@ -1,0 +1,64 @@
+name: ci
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - main
+      - master
+
+env:
+  XDG_CACHE_HOME: ${{ github.workspace }}/.cache
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15
+
+      - name: Cache bigger downloads
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ${{ github.workspace }}/.cache
+          key: ${{ runner.os }}-${{ hashFiles('package.json', 'package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('package.json', 'package-lock.json') }}
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --progress=false --cache ${{ github.workspace }}/.cache/npm
+
+      - name: Build
+        run: npm run build
+
+      # pin the built site to ipfs-websites cluster, output the cid as `steps.ipfs.outputs.cid`
+      # see: https://github.com/ipfs-shipyard/ipfs-github-action
+      - uses: ipfs-shipyard/ipfs-github-action@v2.0.0
+        id: ipfs
+        with:
+          path_to_add: build
+          cluster_host: /dnsaddr/ipfs-websites.collab.ipfscluster.io
+          cluster_user: ${{ secrets.CLUSTER_USER }}
+          cluster_password: ${{ secrets.CLUSTER_PASSWORD }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo ${{ steps.ipfs.outputs.url }}
+      - run: echo ${{ github.ref }}
+
+      # dev dnslink is updated on each main branch update
+      - run: npx dnslink-dnsimple --domain dnslink.io --link /ipfs/${{ steps.ipfs.outputs.cid }} && npx dnslink-dnsimple --domain dnslink.io --link /ipfs/${{ steps.ipfs.outputs.cid }}
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        env:
+          DNSIMPLE_TOKEN: ${{ secrets.DNSIMPLE_TOKEN }}
