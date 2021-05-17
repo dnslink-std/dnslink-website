@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "markdown-toc": "^1.2.0",
-    "marked": "^0.6.1",
+    "marked": "^0.7.0",
     "mustache": "^3.0.1"
   },
   "scripts": {
