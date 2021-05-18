@@ -57,8 +57,14 @@ jobs:
       - run: echo ${{ steps.ipfs.outputs.url }}
       - run: echo ${{ github.ref }}
 
-      # dev dnslink is updated on each main branch update
-      - run: npx dnslink-dnsimple --domain dnslink.io --link /ipfs/${{ steps.ipfs.outputs.cid }} && npx dnslink-dnsimple --domain dnslink.io --link /ipfs/${{ steps.ipfs.outputs.cid }}
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      # dnslink.dev is updated on each main branch update
+      - run: npx dnslink-dnsimple --domain dnslink.dev --link /ipfs/${{ steps.ipfs.outputs.cid }}
+        if: github.ref == 'refs/heads/main'
+        env:
+          DNSIMPLE_TOKEN: ${{ secrets.DNSIMPLE_TOKEN }}
+
+      # dnslink.io is updated on each main branch update
+      - run: npx dnslink-dnsimple --domain dnslink.io --link /ipfs/${{ steps.ipfs.outputs.cid }}
+        if: github.ref == 'refs/heads/main'
         env:
           DNSIMPLE_TOKEN: ${{ secrets.DNSIMPLE_TOKEN }}
