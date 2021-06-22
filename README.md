@@ -1,21 +1,12 @@
-# [dnslink.io](http://dnslink.io) website
+# [dnslink.dev](https://dnslink.dev) website
 
-This is the website http://dnslink.io
-
-This _will_ be the website https://dnslink.dev once we get a tls cert.
+This is the website at https://dnslink.dev (and https://dnslink.io)
 
 ## Develop
 
 ```
-make deps
-make build
-make serve
-```
-
-## Publish
-
-```
-make publish
+npm ci
+npm start
 ```
 
 ## License

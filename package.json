@@ -4,15 +4,17 @@
   "description": "dnslink website",
   "main": "index.js",
   "dependencies": {
-    "remarkable": "^1.7.1",
-    "shx": "0.3.3"
+    "remarkable": "^2.0.1"
   },
   "devDependencies": {
     "markdown-toc": "^1.2.0",
-    "marked": "^0.6.1",
-    "mustache": "^3.0.1"
+    "marked": "^2.1.1",
+    "mustache": "^4.2.0",
+    "serve": "12.0.0",
+    "shx": "0.3.3"
   },
   "scripts": {
+    "start": "npm run build && serve -l 3000 ./build",
     "build": "shx rm -fr build && shx mkdir build && node index.js > build/index.html && shx cp -r img build/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
