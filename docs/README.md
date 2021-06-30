@@ -1,5 +1,4 @@
-
-# DNSLink - linking content and services with dns
+## Introduction
 
 DNSLink is a very simple protocol to link content and services directly from DNS.
 
@@ -233,7 +232,7 @@ https://github.com/ipfs-shipyard/ipfs-deploy - upload static website to IPFS pin
 
 ## Docs
 
-- IPFS and DNSLink: https://docs.ipfs.io/concepts/dnslink/ 
+- IPFS and DNSLink: https://docs.ipfs.io/concepts/dnslink/
 - IPFS Companion and DNSLink: https://docs.ipfs.io/how-to/dnslink-companion/
 - DNSLink in Cloudflare's Gateway: https://developers.cloudflare.com/distributed-web/ipfs-gateway/connecting-website/
 - Explanation of how DNSLink and the IPFS Gateway works: https://www.youtube.com/watch?v=YxKZFeDvcBs
@@ -342,10 +341,7 @@ These are all good reasons to develop new, better name systems. But until those 
 - [@lgierth](https://github.com/lgierth)
 - [@victorbjelkholm](https://github.com/victorbjelkholm)
 - [@diasdavid](https://github.com/diasdavid)
+- [@martinheidegger](https://github.com/martinheidegger)
 - and undoubtedly many more
 
 Developed with the support of [Protocol Labs](https://protocol.ai)
-
-## Acknowledgements
-
-This website is based heavily on [underscorejs.org](https://underscorejs.org).
