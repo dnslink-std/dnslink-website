@@ -4,7 +4,7 @@ DNSLink is a very simple protocol to link content and services directly from DNS
 
 DNSLink leverages the powerful distributed architecture of DNS for a variety of systems that require internet scale mutable names or pointers.
 
-![](img/dns-query.png)
+![](./img/dns-query.png)
 
 ## How does it work?
 
@@ -80,7 +80,7 @@ _dnslink.libp2p.io TXT 60 dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5
 
 Or directly in a Digital Ocean prompt:
 
-![](img/digitalocean.png)
+![](./img/digitalocean.png)
 
 
 ### Step 3: Resolve the link
