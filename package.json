@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "dnslink website",
   "main": "index.js",
+  "private": true,
   "devDependencies": {
     "vuepress": "^2.0.0-beta.20"
   },
