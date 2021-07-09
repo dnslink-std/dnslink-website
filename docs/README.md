@@ -51,6 +51,10 @@ Should go on to resolve
 dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
 ```
 
+## Try it out
+
+<Try-Dnslink />
+
 ## Tutorial
 
 ### Step 0: Find something to link to.
@@ -352,3 +356,13 @@ These are all good reasons to develop new, better name systems. But until those 
 - and undoubtedly many more
 
 Developed with the support of [Protocol Labs](https://protocol.ai)
+
+<script>
+import TryDnslink from '/components/try-dnslink.vue'
+
+export default {
+  components: {
+    TryDnslink,
+  },
+}
+</script>
