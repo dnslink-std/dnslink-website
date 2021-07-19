@@ -7,9 +7,7 @@ head:
 
 ## Introduction
 
-DNSLink is a very simple protocol to link content and services directly from DNS.
-
-DNSLink leverages the powerful distributed architecture of DNS for a variety of systems that require internet scale mutable names or pointers.
+DNSLink is the specification of a format for [DNS][] [`TXT` records][TXT] that allows the association of arbitrary content paths and identifiers with a [domain][].
 
 ![](./img/dns-query.png)
 
@@ -19,41 +17,128 @@ DNSLink leverages the powerful distributed architecture of DNS for a variety of 
 
 ## How does it work?
 
-With DNSLink, you can store a link using any DNS domain name. First, put the link in a `TXT` record at a specific subdomain. Then, you can resolve the link from any program by looking up the TXT record value. Your programs and systems can parse out the record value, and follow the link wherever it may go. Yes, it is that simple.
+When you register a domain at your [name registrar][name-registrar] you can set `TXT` entries additionally to `A` or `CNAME`.
 
-### DNSLink Format
+DNSLink specifies a format for `TXT` entries that allow you to _link_ resources to that domain.
 
-DNSLink values are of the form:
+Using just a DNS client, anyone can quickly lookup the link and request the resource through a decentralized network.
 
-```
-dnslink=<value>
-```
-
-- The `<value>` is the link you want to set. The `<value>` is any link you wish to use. It could be a URL or a path. The `<value>` is in text form, not binary packed, so that it works well with DNS tooling and services.
-  - _(Note: in the future, the value may be a [multiaddr](https://multiformats.io/multiaddr/), in text format. multiaddr is a format for specifying links and network addresses in a self-describing way.)_
-- The prefix `dnslink=` is there to signal that this `TXT` record value is a DNSLink. This is important because many systems use TXT records, and there is a convention of storing multiple space separated values in a single `TXT` record. Following this format allows your DNSLink resolver to parse through whatever is in the `TXT` record and use the first entry prefixed with `dnslink=`.
-
-### DNSLink chaining
-
-As `RFC 1034` says:
-
-> Of course, by the robustness principle, domain software should not fail
-> when presented with CNAME chains or loops; CNAME chains should be followed
-> and CNAME loops signalled as an error.
-
-Tools should support DNSLink chaining and detect loops as errors.
+Here is an example for a valid DNSLink `TXT` entry pointing at content root on IPFS:
 
 ```
-> dig +short TXT _dnslink.test3.example.net
-dnslink=/ipns/test4.example.net
+dnslink=/ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx
 ```
 
-Should go on to resolve
+### Tools
+
+You _can_ use `dig` to lookup the `dnslink=` TXT entries for at domain. <br>_(for Windows users: `dig.exe` is part of [the ISC's `bind` package](https://www.isc.org/download/))_
+
+```sh
+> dig +short TXT _dnslink.dnslink.dev
+_dnslink.dnslink-website.on.fleek.co.
+"dnslink=/ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx"
+```
+
+There is also a `dnslink` CLI client provided with either [JavaScript][js] or [GO][go] libraries that can be used for in-depth inspection and validation of DNSLink records.
+
+```sh
+> dnslink dnslink.dev
+/ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx    [ttl=120]
+```
+
+
+### Format
+
+DNSLink entries are of the form:
 
 ```
-> dig +short TXT _dnslink.test4.example.net
-dnslink=/ipfs/bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
+dnslink=/<namespace>/<identifier>
 ```
+
+- The prefix `dnslink=` is there to signal that this `TXT` record value is a DNSLink. This is important because `TXT` records are used for many purposes that DNSLink should not interfere with.
+- As there are more than one decentralized system, the value after `=` is an opaque "content path" where each segment is separated by `/`
+- The the very first segment indicates `namespace` of the decentralized system you want to use for content resolution, and the remainder is an `identifier` specific to that system.  To illustrate, in IPFS namespace is `ipfs` and identifier is a [CID](https://docs.ipfs.io/concepts/content-addressing/): `/ipfs/bafkqae2xmvwgg33nmuqhi3zajfiemuzahiwss`
+
+### `_dnslink` subdomain
+
+DNSLink entries should be specified on the `_dnslink` subdomain!
+
+```shell
+> dig +short TXT _dnslink.fictive.domain
+dnslink=/ipfs/QmBBBB....BBBB
+```
+
+Looking up `fictive.domain` will use the entry of `_dnslink.fictive.domain`!
+
+```shell
+> dnslink fictive.domain
+/ipfs/QmBBBB....BBBB
+```
+
+### Multiple entries
+
+#### Multiple `dnslink=` `TXT` entries per domain
+
+There is more than one kind of dweb resource out there. [`ipfs`][ipfs] and [`hyper`][hyper] as just two popular examples. Everyone is free to specify more than one `dnslink=/<namespace>/<identifier>` TXT entry per domain:
+
+```console
+$ dig +short TXT _dnslink.example.com
+"dnslink=/ipfs/bafy.."
+"dnslink=/hyper/.."
+"dnslink=/foo/.."
+```
+
+#### Multiple values per namespace
+
+Publishing more than one record for the same namespace is allowed by DNS clients and DNSLink libs and specs, but system responsible for processing those records is free to reject such state as invalid.
+
+#### Sorting
+
+To ensure DNSLink records are processed in deterministic manner, make sure to sort TXT record values in sort them in alphabetical order. This is important because DNS TXT records are not sorted and can arrive in different order.
+
+
+### Redirects and delegation
+
+#### CNAME  delegation
+
+Use of `CNAME` is the suggested way for delegating DNSLink resolution from one DNS name to another.
+
+Example below delegates DNSLink record resolution for `example.com` to TXT records at `_dnslink.external-service.example.net`
+
+```console
+$ dig +noall +answer TXT _dnslink.example.com
+_dnslink.dnslink.dev.	1612	IN	CNAME	_dnslink.external-service.example.net
+_dnslink.external-service.example.net. 112 IN TXT "dnslink=/ipfs/bafkqae2xmvwgg33nmuqhi3zajfiemuzahiwss"
+```
+
+<!-- TODO: hide ALIAS section below for now - needs more explanation in context of regular A and gateways.
+
+#### ALIAS  delegation
+
+DWeb protocols often use CNAME  technique along with an `ALIAS` record to also delegate resolution of `A` and `AAAA` records used for HTTP gateway to some third-party CDN hosting for legacy HTTP clients:
+
+```console
+$ dig +noall +answer TXT example.com
+example.com.		118	IN	TXT	"ALIAS for http-gateway.example.net"
+```
+
+-->
+
+[name-registrar]: https://en.wikipedia.org/wiki/Domain_name_registrar
+[DNS]: https://en.wikipedia.org/wiki/Domain_Name_System
+[TXT]: https://en.wikipedia.org/wiki/TXT_record
+[dweb]: https://en.wikipedia.org/wiki/Decentralized_web
+[domain]: https://en.wikipedia.org/wiki/Domain_name
+[js]: https://npmjs.com/package/@dnslink/js
+[ASCII]: https://en.wikipedia.org/wiki/ASCII
+[go]: https://github.com/dnslink-std/go/releases
+[js-cli]: https://github.com/dnslink-std/js#command-line
+[go-cli]: https://github.com/dnslink-std/go#command-line
+[ipfs]: https://ipfs.io
+[hyper]: https://hypercore-protocol.org/protocol/#hyperdrive
+[multiaddr]: https://multiformats.io/multiaddr/
+[punycode]: https://en.wikipedia.org/wiki/Punycode
+[%-encoding]: https://en.wikipedia.org/wiki/Percent-encoding
 
 ## Tutorial
 
@@ -351,7 +436,11 @@ Of course, DNS has shortcomings:
 
 These are all good reasons to develop new, better name systems. But until those work better than DNS, you'll probably use DNS.
 
-## Contributors
+## Community
+
+See resources at  [dnslink-std/community](https://github.com/dnslink-std/community).
+
+### Contributors
 
 - [@jbenet](https://github.com/jbenet)
 - [@whyrusleeping](https://github.com/whyrusleeping)
