@@ -1,0 +1,4 @@
+{
+  "vetur.format.defaultFormatter.ts": "prettier-tslint",
+  "vetur.format.defaultFormatter.js": "none",
+}

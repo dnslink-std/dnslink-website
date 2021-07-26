@@ -1,110 +1,221 @@
 <template>
-  <div class="container">
-    <input
-      v-model="domain"
-      placeholder="eg. dnslink.dev"
-      @keydown="onKeyDown"
-    >
-    <details v-if="doh && endpoints[doh].docs" class="provider">
-      <summary>
-        <label for="doh">Provider:</label> <select name="doh" v-model="doh">
-          <option
-            v-for="endpoint in endpointNames"
-            :key="endpoint"
-            :value="endpoint.name"
-          >{{ endpoint.name }}</option>
-        </select>
-      </summary>
-
-      <div class="provider-content">
-        To resolve the DNS TXT entries this site, and many libraries use: <a href="https://en.wikipedia.org/wiki/DNS_over_HTTPS" target="_blank">DNS over HTTPS</a> (DoH).
-        There are many, publically offered DoH providers, we use this select list of providers we know to work in the browser.
-
-        <dl>
-          <dt>Information about "{{ doh }}":</dt>
-          <dd><a :href="endpoints[doh].docs" target="_blank">{{ endpoints[doh].docs }}</a></dd>
-          <dt>URL for the lookup:</dt>
-          <dd><a :href="dohLocation" target="_blank">{{ dohLocation }}</a></dd>
-          <dt v-if="endpoints[doh].location">Location</dt>
-          <dd v-if="endpoints[doh].location">{{ endpoints[doh].location }}</dd>
-        </dl>
-      </div>
-    </details>
-    <div v-if="running">...running</div>
-    <pre v-if="error">{{ error.message }}</pre>
-    <div v-if="result">
-      <ul>
-        <!-- eslint-disable-next-line vue/require-v-for-key -->
-        <li v-for="(value, key) in result.links">
-          {{ key }} → {{ value }}
-        </li>
-      </ul>
-      <div v-if="result.path.length > 0">
-        <h5>Deep Linking</h5>
-        <ul>
-          <!-- eslint-disable-next-line vue/require-v-for-key -->
-          <li v-for="path in result.path">
-            {{ pathToString(path) }}
-          </li>
-        </ul>
-      </div>
-      <details class="log">
-        <summary>Log</summary>
-        <table >
-          <tbody>
-            <tr v-for="entry in result.log">
-              <td><LogCode :code="entry.code" :reason="entry.reason" /></td>
-              <td>{{ entry.domain }}{{ pathToString(entry) }}{{ entry.entry }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </details>
-    </div>
+  <div class="dnslink--container">
+    <form @submit="onSubmit">
+      <table class="dnslink--input">
+        <thead>
+          <tr :class="{ info: true, 'info--active': infoTab !== null, [`info--active--${String(infoTab)}`]: infoTab !== null }">
+            <td colspan="7">
+              <dl class="info">
+                <dt>"dnslink"</dt>
+                <dd class="info--tab--dnslink">
+                  <p>We emulate the <code>dnslink</code> command line tool so you try to use it in the browser. The tool itself can be installed on your computer
+                  using <code>npm install dnslink-std/js -g</code> or by <a href="https://github.com/dnslink-std/go#command-line" target="_blank">downloading the go binary</a>.</p></dd>
+                <dt>"--debug"</dt>
+                <dd class="info--tab--debug"><p>The <code>-d</code> flag (<code>--debug</code>) will add debug output to the stderr pipe.</p></dd>
+                <dt>"-f=csv"</dt>
+                <dd class="info--tab--format"><p>The <code>-f</code> option (<code>--format</code>) allows to format the output. We chose <code>csv</code> in this util for readability. If you install it on your
+                  computer you will have other formats such as <code>json</code> and <code>text</code>.</p></dd>
+                <dt>"--doh="</dt>
+                <dd class="info--tab--doh">
+                  <p>To resolve the DNS TXT entries this site, and many libraries use:
+                    <a href="https://en.wikipedia.org/wiki/DNS_over_HTTPS" target="_blank">DNS over HTTPS</a> (DoH).
+                    There are many, publically offered DoH resolvers, we use this select list of resolvers we know
+                    to work in the browser.</p>
+                  <p>About "{{ doh.name }}": <a :href="doh.endpoint.docs" target="_blank">{{ doh.endpoint.docs }}</a><br/>
+                    URL for the lookup: <a :href="endpointToString(doh.endpoint)" target="_blank">{{ endpointToString(doh.endpoint) }}</a><br/>
+                  <span v-if="doh.endpoint.location">Location: {{ doh.endpoint.location }}</span></p>
+                </dd>
+              </dl>
+            </td>
+          </tr>
+          <tr class="info--buttons">
+            <td>&nbsp;</td>
+            <td><button type="button" @click="changeInfoTab('dnslink')" :class="{ selected: infoTab === 'dnslink' }" tabindex="0">ⓘ</button></td>
+            <td><button type="button" @click="changeInfoTab('debug')" :class="{ selected: infoTab === 'debug' }" tabindex="0">ⓘ</button></td>
+            <td><button type="button" @click="changeInfoTab('format')" :class="{ selected: infoTab === 'format' }" tabindex="0">ⓘ</button></td>
+            <td><button type="button" @click="changeInfoTab('doh')" :class="{ selected: infoTab === 'doh' }" tabindex="0">ⓘ</button></td>
+            <td></td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>&gt;</td>
+            <td>dnslink</td>
+            <td>-d</td>
+            <td>-f=csv</td>
+            <td>--doh=<select v-model="doh">
+              <option
+                v-for="endpoint in endpointList"
+                :key="endpoint"
+                :value="endpoint"
+                :selected="endpoint.name === doh.name"
+              >{{ endpoint.name }}</option>
+              </select>
+            </td>
+            <td style="width: 100%;">
+              <input
+                class="domain--input"
+                v-model="domain"
+                placeholder="eg. dnslink.dev"
+              >
+            </td>
+            <td><button type="submit">{{ running ? '…' : '↵' }}</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <result :result="result" :class="{inactive: running}" />
   </div>
 </template>
-<style lang="scss" scoped>
-input {
+<style lang="scss">
+.domain--input {
   font-size: 1.2em;
   margin-bottom: 0.5em;
   width: 60%;
+  width: 100%;
+  height: 1.1em;
+  border-radius: 0.2em;
+  font-size: 1em;
+  background-color: var(--code-bg-color);
+  border: 1px solid #666;
+  padding: 0.1em;
+  color: #fff;
+  margin-bottom: 0;
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-brand);
+  }
 }
-.container {
+.dnslink--container {
   padding: 1em;
   background: #f0f0f0;
-}
-.container {
   color: black;
 }
-.provider, .log {
-  font-size: 0.9em;
-}
-.provider {
-  padding-bottom: 0.5em;
-  border-bottom: 1px solid #b0b0b0;
-}
-.provider-content {
-  margin-top: 0.5em;
-}
-table {
-  width: 100%;
+.dnslink--input {
+  border: none;
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+  padding: 0.3em;
+  border-radius: 0.25em;
+  &, .domain-input, select {
+    font-family: var(--font-family-code);
+  }
+  &, td, th, tr {
+    border: 0;
+    background: var(--code-bg-color);
+  }
+  thead td {
+    color: #ccc;
+  }
+  tbody td {
+    color: #fff;
+  }
+  td {
+    padding: 0;
+    margin: 0;
+    border: none;
+    padding-left: 0.5em;
+  }
+  thead tr {
+    border-bottom: 1px solid var(--code-hl-bg-color);
+  }
+  thead td {
+    text-align: center;
+    padding-bottom: 0;
+  }
+  tbody td {
+    padding-top: 0.4em;
+  }
+  select {
+    width: 8em;
+    color: #fff;
+    padding: 0.1em;
+    border-radius: 0.2em;
+    background-color: var(--code-bg-color);
+    border: 1px solid #666;
+
+    &:focus {
+      outline: none;
+      border-color: var(--c-brand);
+    }
+  }
+  button {
+    height: 1.4em;
+    font-size: 1em;
+    background-color: var(--code-bg-color);
+    border: 1px solid #666;
+    color: #ccc;
+    border-radius: 0.2em;
+    cursor: pointer;
+
+    &:focus {
+      color: var(--c-brand);
+      border-color: var(--c-brand);
+      outline: none;
+    }
+  }
+  .info {
+    display: none;
+    dt, dd {
+      display: none;
+    }
+    &.info--active {
+      margin-top: 0.5em;
+      td {
+        background: var(--c-bg-light);
+        color: var(--c-light);
+        text-align: left;
+        border-radius: 0.1em;
+      }
+      display: table-row;
+      border-bottom: none;
+      dl {
+        display: block;
+        white-space: normal;
+      }
+    }
+    &.info--active--dnslink .info--tab--dnslink,
+    &.info--active--debug .info--tab--debug,
+    &.info--active--format .info--tab--format,
+    &.info--active--doh .info--tab--doh {
+      display: block!important;
+      font-family: var(--font-family);
+    }
+    dd, p, dl {
+      margin: 0;
+    }
+    p {
+      margin: 0.6em 0.4em;
+    }
+  }
+  .info--buttons button {
+    width: 100%;
+    border: 0;
+    height: 100%;
+    color: #ccc;
+    display: block;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    &:focus, &:hover, &.selected {
+      color: #fff;
+    }
+    &.selected {
+      background-color: var(--c-bg-light);
+      color: var(--code-bg-color);
+    }
+  }
 }
 </style>
-<script lang="ts" setup>
-import { ref, watch, computed } from 'vue'
-import { resolveN, Result, PathEntry } from '@dnslink/js'
-import { endpoints }  from 'dns-query'
-import LogCode from './log-code.vue'
+<script lang="ts">
+import { ref, defineComponent } from 'vue'
+import { resolveN, LogEntry, createLookupTXT } from '@dnslink/js'
+import { endpoints, Endpoint }  from 'dns-query'
+import debounce from 'lodash.debounce'
+import Result from './dnslink-result.vue'
 
-const result = ref<Result>(null)
-const error = ref<Error>(null)
-const running = ref(false)
-const dohLocation = computed(() => {
-  const endpoint = endpoints[doh.value]
-  if (!endpoint) return ''
-  return `https://${endpoint.host}${endpoint.port ? `:${endpoint.port}` : '' }${ endpoint.path || '/dns-query' }`
-})
-// eslint-disable-next-line no-unused-vars
-const endpointNames = Object
+const endpointList = Object
   .entries(endpoints)
   .filter(([name, endpoint]) => endpoint.cors || name === 'google')
   .map(([name, endpoint]) => ({ name, endpoint }))
@@ -113,87 +224,100 @@ const endpointNames = Object
     if (a.name > b.name) return 1
     return 0
   })
-const domain = ref()
-const doh = ref('cloudflare')
-const reactAfter = 200
-const restartAfter = 1000
-let controller
-let timer
 
-function onKeyDown (e) {
-  if (e.code === "Enter") {
-    restart()
-  }
-}
+const INPUT_DEBOUNCE = 450
 
-function start () {
-  if (!domain.value) {
-    return
-  }
-  const mine = new AbortController()
-  controller = mine
-  error.value = null
-  running.value = true
-  resolveN(domain.value, {
-    signal: controller.signal,
-    doh: doh.value
-  }).then(
-    next(_result => { result.value = _result }),
-    next(_error => { error.value = _error })
-  )
-
-  function next (op) {
-    return function () {
-      if (controller === mine) {
-        op.apply(null, arguments)
-        controller = undefined
-        running.value = false
+export default defineComponent({
+  components: {
+    result: Result
+  },
+  methods: {
+    endpointToString
+  },
+  setup () {
+    const running = ref(false)
+    const domain = ref()
+    const doh = ref<{ name: string, endpoint: Endpoint }>({ name: 'cloudflare', endpoint: endpoints.cloudflare })
+    const infoTab = ref<string | null>(null)
+    const result = ref<{
+      error?: Error,
+      entries?: {}[],
+      log?: LogEntry[]
+    }>({})
+    let controller: AbortController | undefined
+    const start = debounce(() => {
+      if (controller) controller.abort()
+      if (!domain.value) {
+        return
       }
-    }
-  }
-}
+      const mine = new AbortController()
+      controller = mine
 
-function pathToString (path: PathEntry): string {
-  let result = path.pathname !== undefined ? path.pathname : ''
-  let sep = '?'
-  if (path.search) {
-    for (const [key, values] of Object.entries(path.search)) {
-      for (const value of values) {
-        result += sep + encodeURIComponent(key) + '=' + encodeURIComponent(value)
-        sep = '&'
+      running.value = true
+      resolveN(domain.value, {
+        signal: controller.signal as unknown as any /* problem with outdated AbortController */,
+        lookupTXT: createLookupTXT({ endpoints: [doh.value.endpoint]})
+      }).then(
+        next(_result => {
+          result.value = {
+            entries: linksToEntries(_result.links),
+            log: _result.log
+          }
+        }),
+        next(error => {
+          console.error(error)
+          result.value = { error }
+        })
+      )
+
+      function next <T>(op: (input: T) => void): (input: T)  => void {
+        return function () {
+          if (controller === mine) {
+            op.apply(null, arguments)
+            controller = undefined
+            running.value = false
+          }
+        }
       }
-    }
-  }
-  return result
-}
-
-function restart () {
-  if (timer !== undefined) {
-    clearTimeout(timer)
-    timer = undefined
-  }
-  if (controller) {
-    controller.abort()
-  }
-  start()
-}
-
-watch([domain, doh], () => {
-  if (controller === undefined) {
-    if (timer !== undefined) {
-      clearTimeout(timer)
-    }
-    timer = setTimeout(() => {
-      start() 
-      timer = undefined
-    }, reactAfter)
-  } else {
-    if (timer === undefined) {
-      timer = setTimeout(() => {
-        restart()
-        timer = undefined
-      }, restartAfter)
+    }, INPUT_DEBOUNCE)
+    return {
+      infoTab,
+      changeInfoTab (target: string): (e: Event) => void {
+        infoTab.value = (infoTab.value === target) ? null : target
+        return (e: Event): void => {
+          console.log(e)
+        }
+      },
+      result,
+      running,
+      domain,
+      doh,
+      onSubmit (e: Event): void {
+        if (e) e.preventDefault()
+        start()
+      },
+      endpoints,
+      endpointList
     }
   }
 })
+
+function linksToEntries (links: { [key: string]: Array<{ value: string, ttl: number }>}) {
+  const entries = []
+  for (const key in links) {
+    for (const link of links[key]) {
+      entries.push({
+        key,
+        value: link.value,
+        ttl: link.ttl
+      })
+    }
+  }
+  return entries
+}
+
+function endpointToString (endpoint: Endpoint): string {
+  if (!endpoint) return ''
+  return `https://${endpoint.host}${endpoint.port ? `:${endpoint.port}` : '' }${ endpoint.path || '/dns-query' }`
+}
 </script>
