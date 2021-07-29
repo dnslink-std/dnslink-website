@@ -3,7 +3,9 @@
   <div v-else-if="result.entries" class="result">
     <div class="tabbar">
       <button :class="{selected: tab === 'out'}" @click="tab = 'out'">Output (stdout)</button>
-      <button :class="{selected: tab === 'err'}" @click="tab = 'err'">Log (stderr)</button>
+      <button :class="{selected: tab === 'err'}" @click="tab = 'err'">Log (stderr)
+        <div v-if="errorCount > 0" class="error-count">{{ errorCount }}</div>
+      </button>
     </div>
     <div v-if="tab === 'out'">
       <table>
@@ -40,7 +42,7 @@
         <tbody>
           <!-- eslint-disable-next-line vue/require-v-for-key -->
           <tr v-for="entry in result.log">
-            <td><abbr :title="codeInfo(entry.code)">{{ entry.code }}</abbr></td>
+            <td><abbr :title="codeInfo(entry.code)" :class="{ 'code--error': isErrorCode(entry.code)}">{{ entry.code }}</abbr></td>
             <td>{{ entry.domain }}</td>
             <td>{{ entry.entry }}</td>
             <td><abbr :title="reasonInfo(entry.reason)">{{ entry.title }}</abbr></td>
@@ -67,11 +69,13 @@
     opacity: 0.25;
   }
   .tabbar {
+    display: flex;
     &, button {
       background: var(--code-hl-bg-color);
       border: 0;
     }
     button {
+      position: relative;
       font-size: 1em;
       cursor: pointer;
       color: #fff;
@@ -89,6 +93,23 @@
         border-top-color: var(--c-brand);
       }
     }
+    .error-count {
+      border-radius: .9em;
+      height: 1.8em;
+      width: 1.8em;
+      position: relative;
+      background: var(--c-badge-warning);
+      color: #000;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .8em;
+      margin-left: .5em;
+    }
+  }
+  .code--error {
+    color: var(--c-badge-warning);
   }
   table {
     min-width: 100%;
@@ -108,8 +129,8 @@
 }
 </style>
 <script lang="ts">
-import { PathEntry } from '@dnslink/js'
-import { defineComponent, ref, toRefs } from 'vue'
+import { LogCode, LogEntry, PathEntry } from '@dnslink/js'
+import { defineComponent, ref, toRefs, computed } from 'vue'
 export default defineComponent({
   props: {
     result: {
@@ -117,10 +138,25 @@ export default defineComponent({
       result: null
     }
   },
-  setup: props => ({
-    ...toRefs(props),
-    tab: ref<'out' | 'err'>('out')
-  }),
+  setup: props => {
+    const refs = toRefs(props)
+    return ({
+      ...refs,
+      errorCount: computed(() => {
+        const result = refs.result.value as unknown as { log: LogEntry[] }
+        let errorCount = 0
+        if (result && result.log) {
+          for (const entry of result.log) {
+            if (isErrorCode(entry.code)) {
+              errorCount += 1
+            }
+          }
+        }
+        return errorCount
+      }),
+      tab: ref<'out' | 'err'>('out')
+    })
+  },
   methods: {
     pathToString (path: PathEntry): string {
       let result = path.pathname !== undefined ? path.pathname : ''
@@ -182,7 +218,12 @@ export default defineComponent({
         return 'Entry misformatted, cant be used.'
       }
       return ''
-    }
+    },
+    isErrorCode
   }
 })
+
+function isErrorCode (code: LogCode): boolean {
+  return code !== LogCode.redirect && code !== LogCode.resolve
+}
 </script>
