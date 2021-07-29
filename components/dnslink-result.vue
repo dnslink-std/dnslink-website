@@ -17,13 +17,18 @@
             <td>path</td>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="result.entries.length > 0">
           <!-- eslint-disable-next-line vue/require-v-for-key -->
           <tr v-for="entry in result.entries">
             <td>{{entry.key}}</td>
             <td>{{entry.value}}</td>
             <td>{{entry.ttl}}</td>
             <td></td>
+          </tr>
+        </tbody>
+        <tbody v-else>
+          <tr>
+            <td colspan="4" class="warning--no-result">&lt;No links specified&gt;</td>
           </tr>
         </tbody>
       </table>
@@ -108,7 +113,7 @@
       margin-left: .5em;
     }
   }
-  .code--error {
+  .code--error, .warning--no-result {
     color: var(--c-badge-warning);
   }
   table {
