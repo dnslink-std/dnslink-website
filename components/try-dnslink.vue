@@ -1,7 +1,19 @@
 <template>
   <div class="dnslink--container">
     <form @submit="onSubmit">
-      <table class="dnslink--input">
+      <div class="input--advanced">
+        <input type="checkbox" v-model="advanced"> Advanced Mode
+      </div>
+      <div v-if="!advanced" class="dnslink--simple">
+        <label>Domain: </label>
+        <input
+          class="domain--simple--input"
+          v-model="domain"
+          placeholder="eg. dnslink.dev"
+        >
+        <button type="submit">{{ `Check DNSLink ${running ? '…' : '↵'}` }}</button>
+      </div>
+      <table v-else class="dnslink--input">
         <thead>
           <tr :class="{ info: true, 'info--active': infoTab !== null, [`info--active--${String(infoTab)}`]: infoTab !== null }">
             <td colspan="7">
@@ -68,19 +80,61 @@
   </div>
 </template>
 <style lang="scss">
+.dnslink--simple {
+  border: 1px solid #dfe2e5;
+  background: #fff;
+  border-radius: 0.2em;
+  padding: 0.5em;
+  display: flex;
+  align-items: center;
+  font-size: 1.35em;
+  label {
+    margin-right: 0.5em;
+  }
+  button {
+    margin-left: 0.35em;
+    font-size: 1em;
+    color: darken(#3eaf7c, 20);
+    background-color: lighten(#3eaf7c, 20);
+    border: 2px solid #3eaf7c;
+    border-radius: 0.25em;
+    cursor: pointer;
+    &:focus {
+      border-color: darken(#3eaf7c, 20);
+    }
+    &:hover {
+      background-color: lighten(#3eaf7c, 30);
+    }
+  }
+}
+.input--advanced {
+  margin-top: .3em;
+  font-size: .8em;
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+.domain--simple--input {
+  border: 1px solid #dfe2e5;
+  flex-grow: 1;
+  &:focus {
+    outline: none;
+    border-color: var(--c-brand);
+  }
+}
+.domain--input, .domain--simple--input {
+  font-size: 1em;
+  border-radius: 0.2em;
+  padding: 0.1em;
+  margin-bottom: 0;
+}
 .domain--input {
-  font-size: 1.2em;
-  margin-bottom: 0.5em;
   width: 60%;
   width: 100%;
   height: 1.1em;
-  border-radius: 0.2em;
-  font-size: 1em;
   background-color: var(--code-bg-color);
   border: 1px solid #666;
-  padding: 0.1em;
   color: #fff;
-  margin-bottom: 0;
 
   &:focus {
     outline: none;
@@ -237,6 +291,7 @@ export default defineComponent({
   setup () {
     const running = ref(false)
     const domain = ref()
+    const advanced = ref(false)
     const doh = ref<{ name: string, endpoint: Endpoint }>({ name: 'cloudflare', endpoint: endpoints.cloudflare })
     const infoTab = ref<string | null>(null)
     const result = ref<{
@@ -292,6 +347,7 @@ export default defineComponent({
       running,
       domain,
       doh,
+      advanced,
       onSubmit (e: Event): void {
         if (e) e.preventDefault()
         start()
