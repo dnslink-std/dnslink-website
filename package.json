@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "dependencies": {
-    "@dnslink/js": "^0.10.2",
+    "@dnslink/js": "^0.10.3",
     "lodash.debounce": "^4.0.8",
     "webpack": "^5.46.0"
   },
