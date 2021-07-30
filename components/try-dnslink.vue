@@ -217,9 +217,13 @@
     }
     &.info--active {
       margin-top: 0.5em;
+      code {
+        color: #4e6e8e;
+        background: #fff;
+      }
       td {
-        background: var(--c-bg-light);
-        color: var(--c-light);
+        background: #f3f4f5;
+        color: #000;
         text-align: left;
         border-radius: 0.1em;
       }
@@ -256,8 +260,8 @@
       color: #fff;
     }
     &.selected {
-      background-color: var(--c-bg-light);
-      color: var(--code-bg-color);
+      background-color: #f3f4f5;
+      color: #000;
     }
   }
 }
