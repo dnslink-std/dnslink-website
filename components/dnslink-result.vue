@@ -47,10 +47,10 @@
         <tbody>
           <!-- eslint-disable-next-line vue/require-v-for-key -->
           <tr v-for="entry in result.log">
-            <td><abbr :title="codeInfo(entry.code)" :class="{ 'code--error': isErrorCode(entry.code)}">{{ entry.code }}</abbr></td>
+            <td><abbr :title="CODE_MEANING[entry.code]" :class="{ 'code--error': isErrorCode(entry.code)}">{{ entry.code }}</abbr></td>
             <td>{{ entry.domain }}</td>
             <td>{{ entry.entry }}</td>
-            <td><abbr :title="reasonInfo(entry.reason)">{{ entry.title }}</abbr></td>
+            <td><abbr :title="CODE_MEANING[entry.reason]">{{ entry.reason }}</abbr></td>
             <td>{{ pathToString(entry) }}</td>
           </tr>
         </tbody>
@@ -134,7 +134,7 @@
 }
 </style>
 <script lang="ts">
-import { LogCode, LogEntry, PathEntry } from '@dnslink/js'
+import { LogCode, LogEntry, PathEntry, CODE_MEANING } from '@dnslink/js'
 import { defineComponent, ref, toRefs, computed } from 'vue'
 export default defineComponent({
   props: {
@@ -159,6 +159,7 @@ export default defineComponent({
         }
         return errorCount
       }),
+      CODE_MEANING,
       tab: ref<'out' | 'err'>('out')
     })
   },
@@ -175,54 +176,6 @@ export default defineComponent({
         }
       }
       return result
-    },
-    reasonInfo (reason: string): string {
-      if (reason === 'NO_VALUE') {
-        return 'An dnslink entry needs to have a value, like: dnslink=/key/value.'
-      }
-      if (reason === 'WRONG_START') {
-        return 'A dnslink entry needs to start with a /.'
-      }
-      if (reason === 'KEY_MISSING') {
-        return 'A dnslink entry needs to have a key, like: dnslink=/key/value.'
-      }
-      if (reason === 'INVALID_CHARACTER') {
-        return 'A dnslink entry may only contain ascii characters.'
-      }
-      if (reason === 'INVALID_ENCODING') {
-        return 'A dnslink entry uses percent encoding wrongly.'
-      }
-      if (reason === 'EMPTY_PART') {
-        return 'A redirect may not contain empty parts.'
-      }
-      if (reason === 'TOO_LONG') {
-        return 'A redirect domain may be max 253 characters which each subdomain not exceeding 63 characters.'
-      }
-      return ''
-    },
-    codeInfo (code: string): string {
-      if (code === 'RESOLVE') {
-        return 'Resolving from this domain.'
-      }
-      if (code === 'REDIRECT') {
-        return 'Redirecting away from this domain.'
-      }
-      if (code === 'UNUSED_ENTRY') {
-        return 'A redirect resulted in this entry to be ignored.'
-      }
-      if (code === 'CONFLICT_ENTRY') {
-        return 'Another entry with the same key was preferred over this entry because the other entry is alphabetically earlier.'
-      }
-      if (code === 'ENDLESS_REDIRECT') {
-        return 'Detected endless redirect.'
-      }
-      if (code === 'RECURSIVE_DNSLINK_PREFIX') {
-        return 'Only one _dnslink. prefix can be used.'
-      }
-      if (code === 'INVALID_ENTRY') {
-        return 'Entry misformatted, cant be used.'
-      }
-      return ''
     },
     isErrorCode
   }
