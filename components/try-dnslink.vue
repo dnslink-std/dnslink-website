@@ -9,7 +9,7 @@
         <input
           class="domain--simple--input"
           v-model="domain"
-          placeholder="eg. dnslink.dev"
+          :placeholder="`eg. ${defaultDomain}`"
         >
         <button type="submit">{{ `Check DNSLink ${running ? '…' : '↵'}` }}</button>
       </div>
@@ -68,7 +68,7 @@
               <input
                 class="domain--input"
                 v-model="domain"
-                placeholder="eg. dnslink.dev"
+                :placeholder="`eg. ${defaultDomain}`"
               >
             </td>
             <td><button type="submit">{{ running ? '…' : '↵' }}</button></td>
@@ -293,8 +293,9 @@ export default defineComponent({
     endpointToString
   },
   setup () {
+    const defaultDomain = 'en.wikipedia-on-ipfs.org'
     const running = ref(false)
-    const domain = ref()
+    const domain = ref(defaultDomain)
     const advanced = ref(false)
     const doh = ref<{ name: string, endpoint: Endpoint }>({ name: 'cloudflare', endpoint: endpoints.cloudflare })
     const infoTab = ref<string | null>(null)
@@ -340,6 +341,7 @@ export default defineComponent({
       }
     }, INPUT_DEBOUNCE)
     return {
+      defaultDomain,
       infoTab,
       changeInfoTab (target: string): (e: Event) => void {
         infoTab.value = (infoTab.value === target) ? null : target
