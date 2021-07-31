@@ -34,8 +34,9 @@
                     <a href="https://en.wikipedia.org/wiki/DNS_over_HTTPS" target="_blank">DNS over HTTPS</a> (DoH).
                     There are many, publically offered DoH resolvers, we use this select list of resolvers we know
                     to work in the browser.</p>
-                  <p>About "{{ doh.name }}": <a :href="doh.endpoint.docs" target="_blank">{{ doh.endpoint.docs }}</a><br/>
-                    URL for the lookup: <a :href="endpointToString(doh.endpoint)" target="_blank">{{ endpointToString(doh.endpoint) }}</a><br/>
+                  <p>ID: <code>{{ doh.name }}</code><br/>
+                    About this Endpoint: <a :href="doh.endpoint.docs" target="_blank">{{ doh.endpoint.docs }}</a><br/>
+                    URL: <a :href="endpointToString(doh.endpoint)" target="_blank">{{ endpointToString(doh.endpoint) }}</a><br/>
                   <span v-if="doh.endpoint.location">Location: {{ doh.endpoint.location }}</span></p>
                 </dd>
               </dl>
@@ -62,7 +63,7 @@
                 :key="endpoint"
                 :value="endpoint"
                 :selected="endpoint.name === doh.name"
-              >{{ endpoint.name }}</option>
+              >{{ endpointName(endpoint.endpoint) }}</option>
               </select>
             </td>
             <td style="width: 100%;">
@@ -292,6 +293,7 @@ export default defineComponent({
     result: Result
   },
   methods: {
+    endpointName,
     endpointToString,
     selectInput (e: FocusEvent) {
       (e.target as HTMLInputElement).select()
@@ -381,6 +383,17 @@ function linksToEntries (links: { [key: string]: Array<{ value: string, ttl: num
     }
   }
   return entries
+}
+
+function endpointName (endpoint: Endpoint): string {
+  let url = endpoint.host
+  if (endpoint.port) {
+    url += `:${endpoint.port}`
+  }
+  if (endpoint.path) {
+    url += endpoint.path
+  }
+  return url
 }
 
 function endpointToString (endpoint: Endpoint): string {
