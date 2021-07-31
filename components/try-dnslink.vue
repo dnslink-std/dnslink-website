@@ -9,6 +9,7 @@
         <input
           class="domain--simple--input"
           v-model="domain"
+          @focus="selectInput"
           :placeholder="`eg. ${defaultDomain}`"
         >
         <button type="submit">{{ `Check DNSLink ${running ? '…' : '↵'}` }}</button>
@@ -68,6 +69,7 @@
               <input
                 class="domain--input"
                 v-model="domain"
+                @focus="selectInput"
                 :placeholder="`eg. ${defaultDomain}`"
               >
             </td>
@@ -290,7 +292,10 @@ export default defineComponent({
     result: Result
   },
   methods: {
-    endpointToString
+    endpointToString,
+    selectInput (e: FocusEvent) {
+      (e.target as HTMLInputElement).select()
+    }
   },
   setup () {
     const defaultDomain = 'en.wikipedia-on-ipfs.org'
