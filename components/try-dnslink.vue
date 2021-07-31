@@ -16,6 +16,40 @@
       </div>
       <table v-else class="dnslink--input">
         <thead>
+          <tr>
+            <td>&gt;</td>
+            <td>dnslink</td>
+            <td>-d</td>
+            <td>-f=csv</td>
+            <td>--doh=<select v-model="doh">
+              <option
+                v-for="endpoint in endpointList"
+                :key="endpoint"
+                :value="endpoint"
+                :selected="endpoint.name === doh.name"
+              >{{ endpointName(endpoint.endpoint) }}</option>
+              </select>
+            </td>
+            <td style="width: 100%;">
+              <input
+                class="domain--input"
+                v-model="domain"
+                @focus="selectInput"
+                :placeholder="`eg. ${defaultDomain}`"
+              >
+            </td>
+            <td><button type="submit">{{ running ? '…' : '↵' }}</button></td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="info--buttons">
+            <td>&nbsp;</td>
+            <td><button type="button" @click="changeInfoTab('dnslink')" :class="{ selected: infoTab === 'dnslink' }" tabindex="0">ⓘ</button></td>
+            <td><button type="button" @click="changeInfoTab('debug')" :class="{ selected: infoTab === 'debug' }" tabindex="0">ⓘ</button></td>
+            <td><button type="button" @click="changeInfoTab('format')" :class="{ selected: infoTab === 'format' }" tabindex="0">ⓘ</button></td>
+            <td><button type="button" @click="changeInfoTab('doh')" :class="{ selected: infoTab === 'doh' }" tabindex="0">ⓘ</button></td>
+            <td></td>
+          </tr>
           <tr :class="{ info: true, 'info--active': infoTab !== null, [`info--active--${String(infoTab)}`]: infoTab !== null }">
             <td colspan="7">
               <dl class="info">
@@ -41,40 +75,6 @@
                 </dd>
               </dl>
             </td>
-          </tr>
-          <tr class="info--buttons">
-            <td>&nbsp;</td>
-            <td><button type="button" @click="changeInfoTab('dnslink')" :class="{ selected: infoTab === 'dnslink' }" tabindex="0">ⓘ</button></td>
-            <td><button type="button" @click="changeInfoTab('debug')" :class="{ selected: infoTab === 'debug' }" tabindex="0">ⓘ</button></td>
-            <td><button type="button" @click="changeInfoTab('format')" :class="{ selected: infoTab === 'format' }" tabindex="0">ⓘ</button></td>
-            <td><button type="button" @click="changeInfoTab('doh')" :class="{ selected: infoTab === 'doh' }" tabindex="0">ⓘ</button></td>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>&gt;</td>
-            <td>dnslink</td>
-            <td>-d</td>
-            <td>-f=csv</td>
-            <td>--doh=<select v-model="doh">
-              <option
-                v-for="endpoint in endpointList"
-                :key="endpoint"
-                :value="endpoint"
-                :selected="endpoint.name === doh.name"
-              >{{ endpointName(endpoint.endpoint) }}</option>
-              </select>
-            </td>
-            <td style="width: 100%;">
-              <input
-                class="domain--input"
-                v-model="domain"
-                @focus="selectInput"
-                :placeholder="`eg. ${defaultDomain}`"
-              >
-            </td>
-            <td><button type="submit">{{ running ? '…' : '↵' }}</button></td>
           </tr>
         </tbody>
       </table>
@@ -111,7 +111,7 @@
   }
 }
 .input--advanced {
-  margin-top: .3em;
+  margin-bottom: .3em;
   font-size: .8em;
   align-items: center;
   display: flex;
@@ -163,27 +163,24 @@
     border: 0;
     background: var(--code-bg-color);
   }
-  thead td {
-    color: #ccc;
-  }
-  tbody td {
-    color: #fff;
-  }
   td {
     padding: 0;
     margin: 0;
     border: none;
     padding-left: 0.5em;
   }
-  thead tr {
-    border-bottom: 1px solid var(--code-hl-bg-color);
-  }
-  thead td {
-    text-align: center;
-    padding-bottom: 0;
-  }
   tbody td {
-    padding-top: 0.4em;
+    text-align: center;
+    color: #ccc;
+  }
+  thead {
+    td {
+      color: #fff;
+      padding-bottom: 0.4em;
+    }
+    tr {
+      border-bottom: 1px solid var(--code-hl-bg-color);
+    }
   }
   select {
     width: 8em;
@@ -219,7 +216,6 @@
       display: none;
     }
     &.info--active {
-      margin-top: 0.5em;
       code {
         color: #4e6e8e;
         background: #fff;
@@ -231,7 +227,7 @@
         border-radius: 0.1em;
       }
       display: table-row;
-      border-bottom: none;
+      border-top: none;
       dl {
         display: block;
         white-space: normal;
@@ -252,13 +248,14 @@
     }
   }
   .info--buttons button {
+    margin-top: 0.2em;
     width: 100%;
     border: 0;
     height: 100%;
     color: #ccc;
     display: block;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     &:focus, &:hover, &.selected {
       color: #fff;
     }
