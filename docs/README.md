@@ -339,7 +339,7 @@ These are all good reasons to develop new, better name systems. But until those 
 - [@jbenet](https://github.com/jbenet)
 - [@whyrusleeping](https://github.com/whyrusleeping)
 - [@lgierth](https://github.com/lgierth)
-- [@victorbjelkholm](https://github.com/victorb)
+- [@victorb](https://github.com/victorb)
 - [@diasdavid](https://github.com/diasdavid)
 - [@martinheidegger](https://github.com/martinheidegger)
 - and undoubtedly many more
