@@ -268,7 +268,7 @@ Many websites use DNSLink and IPFS. Check some of them out:
 - https://protocol.ai
 - https://libp2p.io
 - https://multiformats.io
-- _add yours here_
+- https://parrotsec.in
 
 ## Best Practices
 
