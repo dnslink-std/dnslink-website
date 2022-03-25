@@ -34,7 +34,7 @@ Tools should support DNSLink chaining and detect loops as errors.
 
 ```
 > dig +short TXT _dnslink.test3.dnslink.dev
-dnslink=/dnslink/test4.dnslink.dev
+dnslink=/ipns/test4.dnslink.dev
 ```
 
 Should go on to resolve
