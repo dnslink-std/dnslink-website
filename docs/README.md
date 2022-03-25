@@ -249,7 +249,7 @@ Learn more at the [IPFS and DNSLink documentation](https://docs.ipfs.io/concepts
 
 #### IPFS Gateway
 
-The IPFS Gateway resolves DNSLinks automatically. See [gateway recipes](https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes).
+[IPFS Gateways](https://docs.ipfs.io/concepts/glossary#gateway) resolve DNSLinks automatically. See [gateway recipes](https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes) and the [public  gateway list](https://ipfs.github.io/public-gateway-checker/).
 
 #### IPFS Companion
 
@@ -264,11 +264,17 @@ Add yours on github.
 Many websites use DNSLink and IPFS. Check some of them out:
 
 - https://ipfs.io
-- https://filecoin.io
-- https://protocol.ai
+- https://ipld.io
 - https://libp2p.io
 - https://multiformats.io
-- _add yours here_
+- https://en.wikipedia-on-ipfs.org
+- https://tr.wikipedia-on-ipfs.org
+- https://my.wikipedia-on-ipfs.org
+- https://ar.wikipedia-on-ipfs.org
+- https://zh.wikipedia-on-ipfs.org
+- https://uk.wikipedia-on-ipfs.org
+- https://ru.wikipedia-on-ipfs.org
+- https://fa.wikipedia-on-ipfs.org
 
 ## Best Practices
 
