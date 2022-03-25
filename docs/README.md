@@ -33,15 +33,15 @@ As `RFC 1034` says:
 Tools should support DNSLink chaining and detect loops as errors.
 
 ```
-> dig +short TXT _dnslink.test3.dnslink.dev
-dnslink=/ipns/test4.dnslink.dev
+> dig +short TXT _dnslink.test3.example.net
+dnslink=/ipns/test4.example.net
 ```
 
 Should go on to resolve
 
 ```
-> dig +short TXT _dnslink.test4.dnslink.dev
-dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
+> dig +short TXT _dnslink.test4.example.net
+dnslink=/ipfs/bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi
 ```
 
 ## Tutorial
