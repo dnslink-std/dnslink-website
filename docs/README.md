@@ -15,7 +15,7 @@ DNSLink leverages the powerful distributed architecture of DNS for a variety of 
 
 ## Try it out
 
-<Try-Dnslink />
+<try-dnslink />
 
 ## How does it work?
 
@@ -356,13 +356,3 @@ These are all good reasons to develop new, better name systems. But until those 
 - and undoubtedly many more
 
 Developed with the support of [Protocol Labs](https://protocol.ai)
-
-<script>
-import TryDnslink from '/components/try-dnslink.vue'
-
-export default {
-  components: {
-    TryDnslink,
-  },
-}
-</script>
