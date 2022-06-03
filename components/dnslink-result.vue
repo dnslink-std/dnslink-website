@@ -1,6 +1,13 @@
 <template>
   <pre v-if="result.error" class="error">{{ result.error.message }}</pre>
-  <div v-else-if="result.entries" class="result">
+  <div v-else-if="result.entries && !advanced" class="simple--result simple--box">
+    <ul v-if="result.entries.length > 0">
+      <!-- eslint-disable-next-line vue/require-v-for-key -->
+      <li v-for="entry in result.entries">/{{entry.key}}/{{entry.identifier}}</li>
+    </ul>
+    <div v-else>No Entries found</div>
+  </div>
+  <div v-else-if="result.entries && advanced" class="result">
     <div class="tabbar">
       <button :class="{selected: tab === 'out'}" @click="tab = 'out'">Output (stdout)</button>
       <button :class="{selected: tab === 'err'}" @click="tab = 'err'">Log (stderr)
@@ -12,18 +19,16 @@
         <thead>
           <tr>
             <td>key</td>
-            <td style="width: 100%">value</td>
+            <td style="width: 100%">indentifier</td>
             <td>ttl</td>
-            <td>path</td>
           </tr>
         </thead>
         <tbody v-if="result.entries.length > 0">
           <!-- eslint-disable-next-line vue/require-v-for-key -->
           <tr v-for="entry in result.entries">
             <td>{{entry.key}}</td>
-            <td>{{entry.value}}</td>
+            <td>{{entry.identifier}}</td>
             <td>{{entry.ttl}}</td>
-            <td></td>
           </tr>
         </tbody>
         <tbody v-else>
@@ -38,20 +43,16 @@
         <thead>
           <tr>
             <td>type</td>
-            <td>domain</td>
             <td style="width: 100%">entry</td>
             <td>reason</td>
-            <td>path</td>
           </tr>
         </thead>
         <tbody>
           <!-- eslint-disable-next-line vue/require-v-for-key -->
           <tr v-for="entry in result.log">
             <td><abbr :title="CODE_MEANING[entry.code]" :class="{ 'code--error': isErrorCode(entry.code)}">{{ entry.code }}</abbr></td>
-            <td>{{ entry.domain }}</td>
             <td>{{ entry.entry }}</td>
             <td><abbr :title="CODE_MEANING[entry.reason]">{{ entry.reason }}</abbr></td>
-            <td>{{ pathToString(entry) }}</td>
           </tr>
         </tbody>
       </table>
@@ -59,13 +60,26 @@
   </div>
 </template>
 <style lang="scss" scoped>
+.error, .result, .simple--result {
+  border-radius: 0.2em;
+}
 .error {
   background-color: var(--c-badge-warning);
-  border-radius: 0.2em;
   margin-bottom: 0;
 }
+.simple--result {
+  margin-top: 0.35em;
+  background: #fff;
+  padding: 20px;
+  ul, li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+  }
+  overflow: auto;
+}
 .result {
-  border-radius: 0.2em;
   overflow: hidden;
   margin-top: 0.75em;
   color: #fff;
@@ -134,18 +148,22 @@
 }
 </style>
 <script lang="ts">
-import { LogCode, LogEntry, PathEntry, CODE_MEANING } from '@dnslink/js'
+import { LogCode, LogEntry, CODE_MEANING } from '@dnslink/js'
 import { defineComponent, ref, toRefs, computed } from 'vue'
 export default defineComponent({
   props: {
     result: {
       type: Object,
-      result: null
+      default: null
+    },
+    advanced: {
+      type: Boolean,
+      default: false
     }
   },
   setup: props => {
     const refs = toRefs(props)
-    return ({
+    return {
       ...refs,
       errorCount: computed(() => {
         const result = refs.result.value as unknown as { log: LogEntry[] }
@@ -161,27 +179,14 @@ export default defineComponent({
       }),
       CODE_MEANING,
       tab: ref<'out' | 'err'>('out')
-    })
+    }
   },
   methods: {
-    pathToString (path: PathEntry): string {
-      let result = path.pathname !== undefined ? path.pathname : ''
-      let sep = '?'
-      if (path.search) {
-        for (const [key, values] of Object.entries(path.search)) {
-          for (const value of values) {
-            result += sep + encodeURIComponent(key) + '=' + encodeURIComponent(value)
-            sep = '&'
-          }
-        }
-      }
-      return result
-    },
     isErrorCode
   }
 })
 
 function isErrorCode (code: LogCode): boolean {
-  return code !== LogCode.redirect && code !== LogCode.resolve
+  return code === LogCode.invalidEntry
 }
 </script>
