@@ -3,7 +3,7 @@
   <div v-else-if="result.entries && !advanced" class="simple--result simple--box">
     <ul v-if="result.entries.length > 0">
       <!-- eslint-disable-next-line vue/require-v-for-key -->
-      <li v-for="entry in result.entries">/{{entry.key}}/{{entry.identifier}}</li>
+      <li v-for="entry in result.entries">/{{entry.ns}}/{{entry.identifier}}</li>
     </ul>
     <div v-else>No Entries found</div>
   </div>
@@ -18,7 +18,7 @@
       <table>
         <thead>
           <tr>
-            <td>key</td>
+            <td>namespace</td>
             <td style="width: 100%">indentifier</td>
             <td>ttl</td>
           </tr>
@@ -26,7 +26,7 @@
         <tbody v-if="result.entries.length > 0">
           <!-- eslint-disable-next-line vue/require-v-for-key -->
           <tr v-for="entry in result.entries">
-            <td>{{entry.key}}</td>
+            <td>{{entry.ns}}</td>
             <td>{{entry.identifier}}</td>
             <td>{{entry.ttl}}</td>
           </tr>

@@ -434,10 +434,10 @@ export default defineComponent({
 
 function linksToEntries (links: Links) {
   const entries = []
-  for (const key in links) {
-    for (const link of links[key]) {
+  for (const ns in links) {
+    for (const link of links[ns]) {
       entries.push({
-        key,
+        ns,
         identifier: link.identifier,
         ttl: link.ttl
       })
