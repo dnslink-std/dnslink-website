@@ -9,7 +9,6 @@
       </div>
       <div v-if="!advanced" class="dnslink--simple simple--box">
         <div class="dnslink--simple--group">
-          <label for="domain">Domain: </label>
           <input
             id="domain"
             name="domain"
@@ -38,7 +37,7 @@
                 :placeholder="`eg. ${defaultDomain}`"
               >
             </td>
-            <td><button type="submit">{{ running ? '…' : '↵' }}</button></td>
+            <td><button type="submit" class="advanced--submit">{{ running ? '…' : '↵' }}</button></td>
           </tr>
         </thead>
         <tbody>
@@ -103,13 +102,28 @@
 .dnslink--simple--group, .dnslink--simple--submit {
   margin: 0.35em;
 }
+.advanced--submit {
+  white-space: nowrap;
+  margin-left: .75em;
+  color: darken(#3eaf7c, 20) !important;
+  background-color: lighten(#3eaf7c, 20) !important;
+  border: 2px solid #3eaf7c !important;
+  border-radius: .1em;
+  &:focus {
+    border-color: darken(#3eaf7c, 20) !important;
+  }
+  &:hover {
+    background-color: lighten(#3eaf7c, 30) !important;
+  }
+}
 .dnslink--simple--submit {
   font-size: 1em;
   white-space: nowrap;
   color: darken(#3eaf7c, 20);
   background-color: lighten(#3eaf7c, 20);
   border: 2px solid #3eaf7c;
-  border-radius: 0.25em;
+  border-radius: .1em;
+  padding: .2em;
   cursor: pointer;
   &:focus {
     border-color: darken(#3eaf7c, 20);
@@ -125,7 +139,6 @@
 }
 .dnslink--simple--input {
   width: 100%;
-  margin-left: 0.35em;
   flex-grow: 1;
   border: 1px solid #dfe2e5;
   background: white;
@@ -135,6 +148,7 @@
     border-color: var(--c-brand);
   }
 }
+
 @media (max-width: 960px) {
   .dnslink--simple {
     flex-wrap: wrap;
@@ -157,10 +171,13 @@
     }
   }
 }
+.input--advanced > * {
+    cursor:pointer
+}
 .advanced--input, .dnslink--simple--input {
   font-size: 1em;
   border-radius: 0.2em;
-  padding: 0.1em;
+  padding: 0.35em;
   margin-bottom: 0;
   background: #fff;
 }
@@ -176,13 +193,11 @@
   }
 }
 .dnslink--container {
-  padding: 1em;
-  background: #f0f0f0;
-  color: black;
+  padding: 0;
+  transition: background-color var(--t-color);
 }
 .dnslink--input {
   border: none;
-  padding: 0;
   margin: 0;
   white-space: nowrap;
   padding: 0.3em;

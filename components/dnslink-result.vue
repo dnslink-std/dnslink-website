@@ -3,9 +3,9 @@
   <div v-else-if="result.entries && !advanced" class="simple--result simple--box">
     <ul v-if="result.entries.length > 0">
       <!-- eslint-disable-next-line vue/require-v-for-key -->
-      <li v-for="entry in result.entries">/{{entry.ns}}/{{entry.identifier}}</li>
+      <li v-for="entry in result.entries">dnslink=<span style="user-select: all">/{{entry.ns}}/{{entry.identifier}}</span></li>
     </ul>
-    <div v-else>No Entries found</div>
+    <div v-else>No DNSLink found</div>
   </div>
   <div v-else-if="result.entries && advanced" class="result">
     <div class="tabbar">
@@ -65,12 +65,14 @@
 }
 .error {
   background-color: var(--c-badge-warning);
+  color: var(--c-warning-text);
   margin-bottom: 0;
 }
 .simple--result {
   margin-top: 0.35em;
   background: #fff;
-  padding: 20px;
+  color: #000;
+  padding: 1em;
   ul, li {
     list-style: none;
     padding: 0;
