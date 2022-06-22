@@ -1,3 +1,10 @@
+---
+head:
+  - - link
+    - rel: canonical
+      href: https://dnslink.dev/
+---
+
 ## Introduction
 
 DNSLink is a very simple protocol to link content and services directly from DNS.
@@ -5,6 +12,10 @@ DNSLink is a very simple protocol to link content and services directly from DNS
 DNSLink leverages the powerful distributed architecture of DNS for a variety of systems that require internet scale mutable names or pointers.
 
 ![](./img/dns-query.png)
+
+## Try it out
+
+<try-dnslink />
 
 ## How does it work?
 
