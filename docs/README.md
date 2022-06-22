@@ -13,6 +13,10 @@ DNSLink leverages the powerful distributed architecture of DNS for a variety of 
 
 ![](./img/dns-query.png)
 
+## Try it out
+
+<try-dnslink />
+
 ## How does it work?
 
 With DNSLink, you can store a link using any DNS domain name. First, put the link in a `TXT` record at a specific subdomain. Then, you can resolve the link from any program by looking up the TXT record value. Your programs and systems can parse out the record value, and follow the link wherever it may go. Yes, it is that simple.
