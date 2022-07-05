@@ -7,7 +7,8 @@ head:
 
 ## Introduction
 
-DNSLink is the specification of a format for [DNS][] [`TXT` records][TXT] that allows the association of arbitrary content paths and identifiers with a [domain][].
+DNSLink is the specification of a format for [DNS][] [`TXT` records][TXT] that allows the
+association of arbitrary content paths and identifiers with a [domain][].
 
 ![](./img/dns-query.png)
 
@@ -17,69 +18,87 @@ DNSLink is the specification of a format for [DNS][] [`TXT` records][TXT] that a
 
 ## How does it work?
 
-When you register a domain at your [name registrar][name-registrar] you can set `TXT` entries additionally to `A` or `CNAME`.
+When you register a domain at your [name registrar][name-registrar] you can set `TXT` records
+additionally to `A` or `CNAME` records.
 
-DNSLink specifies a format for `TXT` entries that allow you to _link_ resources to that domain.
+A DNSLink record is a specifically formatted `TXT` record that allows you to _link_ resources
+to that domain.
 
-Using just a DNS client, anyone can quickly lookup the link and request the resource through a decentralized network.
+Using just a DNS client, anyone can quickly lookup the link and request the resource through
+a decentralized network.
 
-Here is an example for a valid DNSLink `TXT` entry pointing at content root on IPFS:
+Here is an example for a valid DNSLink record pointing at content root on IPFS:
 
 ```
-dnslink=/ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx
+dnslink=/ipfs/bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze
 ```
 
-### Tools
+### Looking up DNSLink records
 
-You _can_ use `dig` to lookup the `dnslink=` TXT entries for at domain. <br>_(for Windows users: `dig.exe` is part of [the ISC's `bind` package](https://www.isc.org/download/))_
+You _can_ use `dig` to lookup `TXT` records for a domain. <br>_(for Windows users: `dig.exe` is
+part of [the ISC's `bind` package][windows-dig])_
 
 ```sh
-> dig +short TXT _dnslink.dnslink.dev
-_dnslink.dnslink-website.on.fleek.co.
-"dnslink=/ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx"
+> dig +short TXT _dnslink.en.wikipedia-on-ipfs.org
+"dnslink=/ipfs/bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze"
 ```
 
-There is also a `dnslink` CLI client provided with either [JavaScript][js] or [GO][go] libraries that can be used for in-depth inspection and validation of DNSLink records.
+However, `dig` will show **all** `TXT` records for a domain. To make things easier, you can use the
+`dnslink` command-line client provided with either the [JavaScript][js] or [Golang][go] package.
+Either will list only the valid DNSLink `TXT` records.
 
 ```sh
-> dnslink dnslink.dev
+> dnslink en.wikipedia-on-ipfs.org
 /ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx
 ```
 
 
 ### Format
 
-DNSLink entries are of the form:
+DNSLink records are of the form:
 
 ```
 dnslink=/<namespace>/<identifier>
 ```
 
-- The prefix `dnslink=` is there to signal that this `TXT` record value is a DNSLink. This is important because `TXT` records are used for many purposes that DNSLink should not interfere with.
-- As there are more than one decentralized system, the value after `=` is an opaque "content path" where each segment is separated by `/`
-- The the very first segment indicates `namespace` of the decentralized system you want to use for content resolution, and the remainder is an `identifier` specific to that system.  To illustrate, in IPFS namespace is `ipfs` and identifier is a [CID](https://docs.ipfs.io/concepts/content-addressing/): `/ipfs/bafkqae2xmvwgg33nmuqhi3zajfiemuzahiwss`
+- The prefix `dnslink=/` is signals that the `TXT` record in question is a DNSLink. This is
+    important as `TXT` records are used for many purposes that DNSLink should not interfere with.
+- As there is more than one decentralized system, between `dnslink=/` and the next `/` specifies
+    _which_ decentralized system or `namespace` is to be used.
+- The remainder after the second `/` is an `identifier` specific to that system.
+
+In the example below, the `namespace` is `ipfs` and `identifier` is the IPFS [CID][] `bafy...cjze`.
+
+```
+dnslink=/ipfs/bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze
+```
 
 ### `_dnslink` subdomain
 
-DNSLink entries should be specified on the `_dnslink` subdomain!
+DNSLink records should be specified on the `_dnslink` subdomain instead of 
+defining them directly on the domain.
 
 ```shell
 > dig +short TXT _dnslink.fictive.domain
 dnslink=/ipfs/QmBBBB....BBBB
 ```
 
-Looking up `fictive.domain` will use the entry of `_dnslink.fictive.domain`!
+DNSLink implementations need to lookup the `_dnslink` subdomain.
 
 ```shell
 > dnslink fictive.domain
 /ipfs/QmBBBB....BBBB
 ```
 
-### Multiple entries
+### Multiple records
 
-#### Multiple `dnslink=` `TXT` entries per domain
+#### Multiple `dnslink=` `TXT` records per domain
 
-There is more than one kind of dweb resource out there. [`ipfs`][ipfs] and [`hyper`][hyper] as just two popular examples. Everyone is free to specify more than one `dnslink=/<namespace>/<identifier>` TXT entry per domain:
+There is more than one way of publishing of dweb resources. [`ipfs`][IPFS] and
+[`hyper`][hyper] as just two popular examples.
+
+Therefore you are free to specify more than one `dnslink=/<namespace>/<identifier>` TXT record
+per domain:
 
 ```console
 $ dig +short TXT _dnslink.example.com
@@ -90,11 +109,14 @@ $ dig +short TXT _dnslink.example.com
 
 #### Multiple values per namespace
 
-Publishing more than one record for the same namespace is allowed by DNS clients and DNSLink libs and specs, but system responsible for processing those records is free to reject such state as invalid.
+Publishing more than one record for the same namespace is allowed by DNS clients and DNSLink libs
+and this specification, but system responsible for processing those records is free to reject
+such state as invalid.
 
 #### Sorting
 
-To ensure DNSLink records are processed in deterministic manner, make sure to sort TXT record values in sort them in alphabetical order. This is important because DNS TXT records are not sorted and can arrive in different order.
+DNSLink records need to be sorted before they get evaluated. This is relevant as DNS TXT records
+- by specification - do not need to arrive at the client in order!
 
 
 ### Redirects and delegation
@@ -103,7 +125,8 @@ To ensure DNSLink records are processed in deterministic manner, make sure to so
 
 Use of `CNAME` is the suggested way for delegating DNSLink resolution from one DNS name to another.
 
-Example below delegates DNSLink record resolution for `example.com` to TXT records at `_dnslink.external-service.example.net`
+Example below delegates DNSLink record resolution for `example.com` to TXT records
+at `_dnslink.external-service.example.net`
 
 ```console
 $ dig +noall +answer TXT _dnslink.example.com
@@ -124,29 +147,19 @@ example.com.		118	IN	TXT	"ALIAS for http-gateway.example.net"
 
 -->
 
-[name-registrar]: https://en.wikipedia.org/wiki/Domain_name_registrar
-[DNS]: https://en.wikipedia.org/wiki/Domain_Name_System
-[TXT]: https://en.wikipedia.org/wiki/TXT_record
-[domain]: https://en.wikipedia.org/wiki/Domain_name
-[js]: https://npmjs.com/package/@dnslink/js
-[go]: https://github.com/dnslink-std/go/releases
-[js-cli]: https://github.com/dnslink-std/js#command-line
-[go-cli]: https://github.com/dnslink-std/go#command-line
-[ipfs]: https://ipfs.io
-[hyper]: https://hypercore-protocol.org/protocol/#hyperdrive
-[multiaddr]: https://multiformats.io/multiaddr/
-
 ## Tutorial
 
 ### Step 0: Find something to link to.
 
-In this tutorial, we'll link to [the libp2p website](https://libp2p.io), on [IPFS](https://ipfs.io). At the time of writing this, the website had the IPFS address:
+In this tutorial, we'll link to [the libp2p website][libp2p], on [IPFS][].
+At the time of writing this, the website had the IPFS address:
 
 ```
 /ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
 ```
 
-You can view this on the global IPFS gateway: https://ipfs.io/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
+You can view this on the global IPFS gateway:
+[ipfs.io/ipfs/Qmc2...ZDmU](https://ipfs.io/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU)
 
 And even download it with ipfs:
 
@@ -156,18 +169,31 @@ ipfs get /ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
 
 ### Step 1: Choose a domain name to link from.
 
-For this tutorial, I'll use the domain name `libp2p.io`. You can use whatever domain you control. I happen to be using an `ALIAS` record on this domain as well (to make the website load directly via the IPFS gateway), but that is not a problem: the convention to prefix the domain with `_dnslink.` allows for complex DNS setups like this.
+For this tutorial, I'll use the domain name `libp2p.io`. You can use whatever domain you control.
+I happen to be using an `ALIAS` record on this domain as well (to make the website load directly
+via the IPFS gateway), but that is not a problem: the convention to prefix the domain with
+`_dnslink.` allows for complex DNS setups like this.
 
 So the full domain name I'll set the record on is: `_dnslink.libp2p.io`.
 
 ### Step 2: Set the DNSLink value on a `TXT` record.
 
-Let's set the link by creating a `TXT` record on the domain name. This is going to be specific to your DNS tooling. Unfortunately there is no standard cli tool or web service to set domain names :(. Every registrar and name server has its own web app, and API tooling. (yes, this is widely regarded as a poor state of affairs).
+Let's set the link by creating a `TXT` record on the domain name. This is going to be specific to
+your DNS tooling. Unfortunately there is no standard cli tool or web service to set domain names 🙁.
+
+Every registrar and name server has its own web app, and API tooling.
+_(Yes, this is widely regarded as a poor state of affairs.)_
 
 Consider setting the record, via an imaginary dns cli tool:
 
 ```
-> my-dns-tool set --type=TXT --ttl=60 --domain=libp2p.io --name=_dnslink --value="dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU"
+> my-dns-tool set \
+    --type=TXT \
+    --ttl=60 \
+    --domain=libp2p.io \
+    --name=_dnslink \
+    --value="dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU"
+
 _dnslink.libp2p.io TXT 60 dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
 ```
 
@@ -235,7 +261,8 @@ QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/
 
 ### Example: User-friendly name resolution within IPFS
 
-IPFS has DNSLink resolution built in though, so you could just do the following to achieve the same result as in the tutorial above.
+IPFS has DNSLink resolution built in though, so you could just do the following to achieve the same
+result as in the tutorial above.
 
 Given this dnslink:
 ```
@@ -261,74 +288,105 @@ QmUZ23DEtL3aUFaLgCEQv5yEDigGP2ajioXPVZZ6S7DYVa 561   sitemap.xml
 QmRgig5gnP8XJ16PWJW8qdjvayY7kQHaJTPfYWPSe2BAyN -     tags/
 ```
 
-You can find out more at the [IPFS DNSLink documentation](https://docs.ipfs.io/concepts/dnslink/).
+You can find out more at the [IPFS DNSLink documentation][ipfs-dnslink].
 
 ### Example: IPFS Gateway
 
-You can also just check it out on the web. The IPFS gateway resolves DNSLink automatically too. Check it out at https://ipfs.io/ipns/libp2p.io or https://dweb.link/ipns/libp2p.io which will provide proper origin isolation for use in browsers.
+You can also just check it out on the web. The IPFS gateway resolves DNSLink automatically too.
+Check it out at https://ipfs.io/ipns/libp2p.io or https://dweb.link/ipns/libp2p.io which will
+provide proper origin isolation for use in browsers.
 
-**How does that work?** The gateway takes the part after `/ipns/`, if it is a DNS domain name, it checks for a DNSLink at either the domain name, or `_dnslink.` prefixed version. In this case it finds our DNSLink at `_dnslink.libp2p.io` and resolves that.
+##### How does that work?
 
-**But what about [https://libp2p.io](https://libp2p.io)?** Yes, https://libp2p.io also works, that uses a combination of DNSLink, a `ALIAS` record in `libp2p.io`, and the ipfs gateway. Basically:
-1. the browser first checks for `A` records for `libp2p.io`. dns finds an `ALIAS` to `gateway-int.ipfs.io`, and those `A` records:
+The gateway takes the part after `/ipns/`, if it is a DNS domain name, it
+checks for a DNSLink at either the domain name, or `_dnslink.` prefixed version. In this case it
+finds our DNSLink at `_dnslink.libp2p.io` and resolves that.
+
+##### But what about libp2p.io?
+
+Yes, `libp2p` also works, that uses a combination of DNSLink, a `ALIAS` record in `libp2p.io`,
+and the ipfs gateway.
+
+Basically:
+
+1. the browser first checks for `A` records for `libp2p.io`. dns finds an `ALIAS` to
+    `gateway-int.ipfs.io`, and those `A` records:
+
     ```
     > dig A libp2p.io
     gateway.ipfs.io.        119     IN      A       209.94.90.1
     ```
+
 2. the browser then connects to `http://209.94.90.1`, using a `HOST: libp2p.io` HTTP header.
-3. the ipfs gateway reads the `HOST: libp2p.io` header, and -- recognizing a DNS name -- checks for an associated DNSLink at either `libp2p.io` or `_dnslink.libp2p.io`.
+3. the ipfs gateway reads the `HOST: libp2p.io` header, and -- recognizing a DNS name -- checks for
+    an associated DNSLink at either `libp2p.io` or `_dnslink.libp2p.io`.
+
     ```
     > dig +short TXT _dnslink.libp2p.io
     "dnslink=/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU"
     ```
-4. The gateway finds the link at `_dnslink.libp2p.io` leading to `/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU`.
-5. The gateway fetches the IPFS web content at `/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU` and serves it to the browser.
+
+4. The gateway finds the link at `_dnslink.libp2p.io` leading to
+    `/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU`.
+5. The gateway fetches the IPFS web content at
+    `/ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU` and serves it to the browser.
 6. The browser renders it happily, preserving the original pretty name of `https://libp2p.io`
 
 
 ### Example: IPFS Companion
 
-Similar to the IPFS Gateway, [IPFS Companion](https://github.com/ipfs-shipyard/ipfs-companion) uses DNSLink natively within the browser to resolve IPFS web content. IPFS Companion has a feature that tests domain names for the presence of dnslink `TXT` records, and if it finds them, then it serves content via IPFS instead.
+Similar to the IPFS Gateway, [IPFS Companion][] uses
+DNSLink natively within the browser to resolve IPFS web content. IPFS Companion has a feature that
+tests domain names for the presence of dnslink `TXT` records, and if it finds them, then it serves
+content via IPFS instead.
 
-You can find out more about how it works at [IPFS Companion's DNSLink documentation](https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md).
+You can find out more about how it works at
+[IPFS Companion's DNSLink documentation][ipfs-companion-doc].
 
 ## Tools
 
-There are a number of tools related to DNSLink.
+There are a number of tools implementing DNSLink.
 
-#### go-ipfs
+### Reference implementations
 
-go-ipfs has built-in support for resolving DNSLinks:
+There are currently reference implementations for two programming languages available:
+
+- Golang: [dnslink-std/go][go]
+- JavaScript: [@dnslink/js][js]
+
+Both are tested using the universal [DNSLink test harness][dnslink-test].
+
+### Tools that support DNSLink
+
+#### [go-ipfs][]
+
+`go-ipfs` has built-in support for resolving DNSLinks:
 
 ```
 $ ipfs name resolve -r /ipns/libp2p.io
 /ipfs/Qmc2o4ZNtbinEmRF9UGouBYTuiHbtCSShMFRbBY5ZiZDmU
 ```
 
-One can also run HTTP Gateway capable of hosting DNSLink websites. See [examples](https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes).
+One can also run HTTP Gateway capable of hosting DNSLink websites. See [examples][gateway-examples].
 
-#### go-dnslink
+#### [dnslink-deploy][]
 
-https://github.com/ipfs/go-dnslink - dnslink resolution in go (used by [go-ipfs](https://github.com/ipfs/go-ipfs))
+Tool for setting DNSLinks on Digital Ocean _(and maybe more someday others)_:
 
-#### js-dnslink
+[dnslink-deploy]: https://github.com/ipfs/dnslink-deploy
 
-https://www.npmjs.com/package/dnslink - dnslink resolution in javascript
+#### [ipfs-deploy][]
 
-#### dnslink-deploy
+Upload static website to IPFS pinning services and optionally update DNS _(Cloudflare, DNSSimple)_.
 
-https://github.com/ipfs/dnslink-deploy - `dnslink-deploy` a tool for setting DNSLinks on Digital Ocean (and maybe more someday others):
-
-#### ipfs-deploy
-
-https://github.com/ipfs-shipyard/ipfs-deploy - upload static website to IPFS pinning services and optionally update DNS (Cloudflare, DNSSimple)
+[ipfs-deploy]: https://github.com/ipfs-shipyard/ipfs-deploy
 
 ## Docs
 
-- IPFS and DNSLink: https://docs.ipfs.io/concepts/dnslink/
-- IPFS Companion and DNSLink: https://docs.ipfs.io/how-to/dnslink-companion/
-- DNSLink in Cloudflare's Gateway: https://developers.cloudflare.com/distributed-web/ipfs-gateway/connecting-website/
-- Explanation of how DNSLink and the IPFS Gateway works: https://www.youtube.com/watch?v=YxKZFeDvcBs
+- [IPFS and DNSLink][ipfs-dnslink]
+- [IPFS Companion and DNSLink][ipfs-companion-dnslink]
+- [DNSLink in Cloudflare's Gateway][cloudflare-dnslink]
+- [Youtube: Explanation of how DNSLink and the IPFS Gateway works][yt-explainer]
 
 ## Known Users
 
@@ -336,21 +394,31 @@ https://github.com/ipfs-shipyard/ipfs-deploy - upload static website to IPFS pin
 
 #### IPFS
 
-IPFS is a heavy user of DNSLink. It is used in the core API, as part of IPNS, the name system IPFS uses. It is also used in a variety of tools around IPFS.
+IPFS is a heavy user of DNSLink. It is used in the core API, as part of IPNS, the name system IPFS
+uses. It is also used in a variety of tools around IPFS.
 
-Learn more at the [IPFS and DNSLink documentation](https://docs.ipfs.io/concepts/dnslink/).
+Learn more at the [IPFS and DNSLink documentation][ipfs-dnslink].
 
-#### IPFS Gateway
+#### [IPFS Gateway][]
 
-[IPFS Gateways](https://docs.ipfs.io/concepts/glossary#gateway) resolve DNSLinks automatically. See [gateway recipes](https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes) and the [public  gateway list](https://ipfs.github.io/public-gateway-checker/).
+IPFS Gateways resolve DNSLinks automatically. See [gateway recipes][] and the
+[public  gateway list][].
 
-#### IPFS Companion
+[IPFS Gateway]: https://docs.ipfs.io/concepts/glossary#gateway
+[gateway recipes]: https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes
+[public gateway list]: https://ipfs.github.io/public-gateway-checker/
 
-[IPFS Companion](https://github.com/ipfs-shipyard/ipfs-companion) can resolve DNSLinks automatically. See more in the [IPFS Companion documentaion](https://docs.ipfs.io/how-to/dnslink-companion/).
+
+#### [IPFS Companion][]
+
+The `IPFS Companion` can resolve DNSLinks automatically. See more in the
+[IPFS Companion documentation][ipfs-companion-dnslink].
+
+[IPFS Companion]: https://github.com/ipfs-shipyard/ipfs-companion
 
 #### add yours here
 
-Add yours on github.
+Add yours [on github][this-page]. 
 
 ### Websites
 
@@ -373,7 +441,9 @@ Many websites use DNSLink and IPFS. Check some of them out:
 
 ### Set a low `TTL` in the `TXT` record.
 
-The default `TTL` for DNS records is usually `3600`, which is 1hr. We recommend setting a low `TTL` in the `TXT` record, something like `60` seconds or so. This makes it so you can update your name quickly, and use it for website deploys.
+The default `TTL` for DNS records is usually `3600`, which is 1hr. We recommend setting a low `TTL`
+in the `TXT` record, something like `60` seconds or so. This makes it so you can update your name
+quickly, and use it for website deploys.
 
 ## FAQ
 
@@ -383,38 +453,60 @@ Not yet. We should write one.
 
 #### Can I use DNSLink in non-DNS systems?
 
-Yes absolutely. For example, you can use DNSLink to resolve names from Ethereum Name System (ENS) thanks to DNS-interop provided at https://eth.link. If you use DNSLink for something cool like this, be sure to add it to the [Users](#Users) section of this doc.
+Yes absolutely. For example, you can use DNSLink to resolve names from Ethereum Name System (ENS)
+thanks to DNS-interop provided at https://eth.link. If you use DNSLink for something cool like this,
+be sure to add it to the [Users](#Users) section of this doc.
 
 #### Why use `_dnslink.domain` instead of `domain`?
 
-`_dnslink.domain` does not conflict with `CNAME` and `ALIAS` records, and is better for operations security: enables you to set up an automated publishing or delegate control over your DNSLink records to a third party without giving away full control over the original DNS zone.
+`_dnslink.domain` does not conflict with `CNAME` and `ALIAS` records, and is better for operations
+security: enables you to set up an automated publishing or delegate control over your DNSLink
+records to a third party without giving away full control over the original DNS zone.
 
-`TXT` record on `domain` is deprecated and resolved by some software only for legacy reasons: we historically started with supporting records on the normal domain, and only found the issue with `CNAME` and `ALIAS` records later on. Those problems are absent when `_dnslink.domain` is used.
+`TXT` record on `domain` is deprecated and resolved by some software only for legacy reasons: we
+historically started with supporting records on the normal domain, and only found the issue with
+`CNAME` and `ALIAS` records later on. Those problems are absent when `_dnslink.domain` is used.
 
 Rule of thumb: always use `_dnslink.domain`.
 
 #### Why use the `dnslink=` prefix in the `TXT` value?
 
-The prefix `dnslink=` is there to signal that this `TXT` record value is a DNSLink. This is important because many systems use TXT records, and there is a convention of storing multiple space separated values in a single `TXT` record. Following this format allows your DNSLink resolver to parse through whatever is in the `TXT` record and use the first entry prefixed with `dnslink=`.
+The prefix `dnslink=` is there to signal that this `TXT` record value is a DNSLink. This is
+important because many systems use TXT records, and there is a convention of storing multiple space
+separated values in a single `TXT` record. Following this format allows your DNSLink resolver to
+parse through whatever is in the `TXT` record and use the first record prefixed with `dnslink=`.
 
 #### Why not use other DNS record types, like `SRV`?
 
-Special purpose records enforce some structure to their values, and these are not flexible enough. We wanted a simple protocol that allowed us to link to any other system or service, in perpetuity. This can only be achieved with systems designed to allow structure within the input. The `TXT` record is a good example of this -- it imposes a string value, but it allows the user to make sense out of anything within that string. Sets of users can imposese different rules for resolution. In our case, this is handled through [Multiaddr](https://multiformats.io/multiaddr).
+Special purpose records enforce some structure to their values, and these are not flexible enough.
+We wanted a simple protocol that allowed us to link to any other system or service, in perpetuity.
+This can only be achieved with systems designed to allow structure within the input. The `TXT`
+record is a good example of this -- it imposes a string value, but it allows the user to make sense
+out of anything within that string. Sets of users can imposese different rules for resolution.
+
+In our case, this is handled through [Multiaddr][].
 
 #### Why not just extend DNS with more record types?
 
-It seems that what DNSLink does could be accomplished by a verity of new special purpose record types. But extending DNS is a very expensive process -- in terms of time and adoption. We wanted to find a way to use all the existing infrastructure without requiring any changes at all.
+It seems that what DNSLink does could be accomplished by a verity of new special purpose record
+types. But extending DNS is a very expensive process -- in terms of time and adoption. We wanted to
+find a way to use all the existing infrastructure without requiring any changes at all.
 
 
 #### Why DNS?
 
-> The [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) (DNS) is a hierarchical and decentralized naming system for computers, services, or other resources connected to the Internet or a private network. ... By providing a worldwide, distributed directory service, the Domain Name System has been an essential component of the functionality of the Internet since 1985.
+> The [Domain Name System](https://en.wikipedia.org/wiki/Domain_Name_System) (DNS) is a hierarchical
+> and decentralized naming system for computers, services, or other resources connected to the
+> Internet or a private network. ... By providing a worldwide, distributed directory service, the
+> Domain Name System has been an essential component of the functionality of the Internet since
+> 1985.
 
 DNS is:
 - **somewhat decentralized** - it delegates naming authority to nations and organizations world-wide
 - **hierarchical** - it achieves scalable naming via name space partitioning
 - **scalable** - it is the dominant name system on the planet -- most internet traffic uses it
-- **ubiquitous** - as the dominant internet name system since 1985, DNS is well-known and well-supported.
+- **ubiquitous** - as the dominant internet name system since 1985, DNS is well-known and
+    well-supported.
 
 As a name system, DNS has pragmatic solutions for:
 - **control of names**
@@ -427,11 +519,15 @@ Of course, DNS has shortcomings:
 - **somewhat centralized** - central authorities manage DNS roots (ICANN, etc.)
 - **censorable** - DNS is easy to censor, at the registrar and ISP levels
 - **temporary** - DNS names are _rented_, not really _owned_, and can be revoked and seized
-- **not offline-first** - DNS does not have good solutions for values to spread through intermittently connected networks
-- **cumbersome** - buying, registering, and setting values on a name is more complicated than acquiring a mutable pointer should be.
-- **not program friendly** - registering DNS names requires being a human or a human organization with human agents, with access to credit cards. this isn't suitable for lots of programs.
+- **not offline-first** - DNS does not have good solutions for values to spread through
+    intermittently connected networks
+- **cumbersome** - buying, registering, and setting values on a name is more complicated than
+    acquiring a mutable pointer should be.
+- **not program friendly** - registering DNS names requires being a human or a human organization
+    with human agents, with access to credit cards. this isn't suitable for lots of programs.
 
-These are all good reasons to develop new, better name systems. But until those work better than DNS, you'll probably use DNS.
+These are all good reasons to develop new, better name systems. But until those work better than
+DNS, you'll probably use DNS.
 
 ## Community
 
@@ -448,3 +544,27 @@ See resources at  [dnslink-std/community](https://github.com/dnslink-std/communi
 - and undoubtedly many more
 
 Developed with the support of [Protocol Labs](https://protocol.ai)
+
+[name-registrar]: https://en.wikipedia.org/wiki/Domain_name_registrar
+[CID]: https://docs.ipfs.io/concepts/content-addressing/
+[windows-dig]: https://www.isc.org/download/
+[DNS]: https://en.wikipedia.org/wiki/Domain_Name_System
+[TXT]: https://en.wikipedia.org/wiki/TXT_record
+[domain]: https://en.wikipedia.org/wiki/Domain_name
+[js]: https://npmjs.com/package/@dnslink/js
+[go]: https://github.com/dnslink-std/go/releases
+[js-cli]: https://github.com/dnslink-std/js#command-line
+[go-cli]: https://github.com/dnslink-std/go#command-line
+[go-ipfs]: https://github.com/ipfs/go-ipfs
+[IPFS]: https://ipfs.io
+[hyper]: https://hypercore-protocol.org/protocol/#hyperdrive
+[Multiaddr]: https://multiformats.io/multiaddr/
+[dnslink-test]: https://github.com/dnslink-std/test
+[gateway-examples]: https://github.com/ipfs/go-ipfs/blob/master/docs/config.md#gateway-recipes
+[this-page]: https://github.com/dnslink-std/dnslink-website/edit/main/docs/README.md
+[ipfs-dnslink]: https://docs.ipfs.io/concepts/dnslink/
+[ipfs-companion-doc]: https://github.com/ipfs-shipyard/ipfs-companion/blob/master/docs/dnslink.md
+[ipfs-companion-dnslink]: https://docs.ipfs.io/how-to/dnslink-companion/
+[cloudflare-dnslink]: https://developers.cloudflare.com/distributed-web/ipfs-gateway/connecting-website/
+[yt-explainer]: https://www.youtube.com/watch?v=YxKZFeDvcBs
+[libp2p]: https://libp2p.io
