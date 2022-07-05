@@ -127,18 +127,14 @@ example.com.		118	IN	TXT	"ALIAS for http-gateway.example.net"
 [name-registrar]: https://en.wikipedia.org/wiki/Domain_name_registrar
 [DNS]: https://en.wikipedia.org/wiki/Domain_Name_System
 [TXT]: https://en.wikipedia.org/wiki/TXT_record
-[dweb]: https://en.wikipedia.org/wiki/Decentralized_web
 [domain]: https://en.wikipedia.org/wiki/Domain_name
 [js]: https://npmjs.com/package/@dnslink/js
-[ASCII]: https://en.wikipedia.org/wiki/ASCII
 [go]: https://github.com/dnslink-std/go/releases
 [js-cli]: https://github.com/dnslink-std/js#command-line
 [go-cli]: https://github.com/dnslink-std/go#command-line
 [ipfs]: https://ipfs.io
 [hyper]: https://hypercore-protocol.org/protocol/#hyperdrive
 [multiaddr]: https://multiformats.io/multiaddr/
-[punycode]: https://en.wikipedia.org/wiki/Punycode
-[%-encoding]: https://en.wikipedia.org/wiki/Percent-encoding
 
 ## Tutorial
 
