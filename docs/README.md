@@ -43,7 +43,7 @@ There is also a `dnslink` CLI client provided with either [JavaScript][js] or [G
 
 ```sh
 > dnslink dnslink.dev
-/ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx    [ttl=120]
+/ipfs/QmaCveU7uyVKUSczmiCc85N7jtdZuBoKMrmcHbnnP26DCx
 ```
 
 
