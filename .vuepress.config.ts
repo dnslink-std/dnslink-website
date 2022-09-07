@@ -20,6 +20,9 @@ export default defineUserConfig({
     })
   ],
   markdown: {
+    code: {
+        lineNumbers: false
+    },
     linkify: true
   },
   theme: defaultTheme({
