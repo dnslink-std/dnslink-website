@@ -19,7 +19,7 @@
         <thead>
           <tr>
             <td>namespace</td>
-            <td style="width: 100%">indentifier</td>
+            <td style="width: 100%">identifier</td>
             <td>ttl</td>
           </tr>
         </thead>
