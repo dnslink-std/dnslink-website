@@ -333,7 +333,6 @@ This improves resiliency, and enables user agents to opportunistically upgrade t
   - Install [Kubo][] daemon and follow [gateway recipes][]
   - Or use third-party service such as [Cloudflare][cloudflare-dnslink] or [Fleek][fleek-dnslink]
 - The [IPFS Companion browser extension](#ipfs-companion) works with Chromium and Firefox. It can resolve DNSLinks automatically and load the content with help of a local IPFS gateway. It will also recover from HTTP server being down, and load content over IPFS, even when redirect is disabled by default. See more in the [IPFS Companion documentation][ipfs-companion-dnslink].
-- [Brave browser supports resolving IPFS DNSLinks][brave-ipfs] in form of `ipns://en.wikipedia-on-ipfs.org`, it will also detect when website has DNSLink and suggest opening it via supported protocols such as [IPFS][].
 
 #### Website Examples
 
@@ -438,7 +437,6 @@ Both are tested using the universal [DNSLink test harness][dnslink-test].
 
 - [IPFS and DNSLink][ipfs-dnslink]
 - [IPFS Companion and DNSLink][ipfs-companion-dnslink]
-- [DNSLink support in Brave browser][brave-ipfs]
 - [DNSLink support at Cloudflare][cloudflare-dnslink]
 - [DNSLink support at Fleek][fleek-dnslink]
 - [Youtube: Explanation of how DNSLink and the IPFS Gateway works][yt-explainer]
@@ -563,7 +561,6 @@ Developed with the support of [Protocol Labs](https://protocol.ai)
 [go-cli]: https://github.com/dnslink-std/go#command-line
 [kubo]: https://github.com/ipfs/kubo
 [IPFS]: https://ipfs.tech
-[brave-ipfs]: https://github.com/brave/brave-browser/issues/13609
 [public-gateways]: https://ipfs.github.io/public-gateway-checker/
 [subdomain-gateway]: https://docs.ipfs.tech/how-to/address-ipfs-on-web/#subdomain-gateway
 [hyper]: https://hypercore-protocol.org/protocol/#hyperdrive
