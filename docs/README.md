@@ -485,7 +485,7 @@ Special purpose records enforce some structure to their values, and these are no
 We wanted a simple protocol that allowed us to link to any other system or service, in perpetuity.
 This can only be achieved with systems designed to allow structure within the input. The `TXT`
 record is a good example of this -- it imposes a string value, but it allows the user to make sense
-out of anything within that string. Sets of users can imposese different rules for resolution.
+out of anything within that string. Sets of users can impose different rules for resolution.
 
 In our case, this is handled through [Multiaddr][].
 
