@@ -22,15 +22,14 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v5
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
-          node-version: 15
+          node-version: 24
 
       - name: Cache bigger downloads
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache
         with:
           path: ${{ github.workspace }}/.cache
