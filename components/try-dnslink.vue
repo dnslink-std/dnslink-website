@@ -360,7 +360,18 @@ export default defineComponent({
   setup () {
     const defaultDomain = 'en.wikipedia-on-ipfs.org'
     const running = ref(false)
-    const domain = ref(defaultDomain)
+
+    // Check for domain in URL fragment (e.g., #example.com)
+    const fragmentDomain = typeof window !== 'undefined' && window.location.hash
+      ? window.location.hash.slice(1).trim()
+      : ''
+
+    // Only use fragment if it looks like a DNS name (contains at least one dot)
+    const initialDomain = fragmentDomain && fragmentDomain.includes('.')
+      ? fragmentDomain
+      : defaultDomain
+
+    const domain = ref(initialDomain)
     const advanced = ref(false)
     const endpoints = ref<string[]>([FALLBACK_ENDPOINT])
     wellknown.data().then(
