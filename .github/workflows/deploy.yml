@@ -54,16 +54,16 @@ jobs:
     needs: deploy-ipfs
     if: github.event.workflow_run.head_branch == 'main'
     environment:
-      name: 'dnslink'
-      url: "https://dnslink.dev/"
+      name: 'cf-dnslink'
+      url: "https://dnslink-dev.ipns.inbrowser.link/"
     steps:
       - name: Update DNSLink
-        # TODO: switch to @v1 once https://github.com/ipshipyard/dnslink-action/pull/8 is merged
-        uses: ipshipyard/dnslink-action@93ed9a4c8db10d53ea05826aae2b5c24790b6733
+        uses: ipshipyard/dnslink-action@v1
         with:
           cid: ${{ needs.deploy-ipfs.outputs.cid }}
-          dnslink_domain: 'dnslink.dev'
-          dnsimple_token: ${{ secrets.DNSIMPLE_TOKEN }}
+          dnslink_domain: 'dnslink-dev.dnslinks.ipshipyard.tech'
+          cf_zone_id: ${{ secrets.CF_DNS_ZONE_ID }}
+          cf_auth_token: ${{ secrets.CF_DNS_AUTH_TOKEN }}
           github_token: ${{ github.token }}
           set_github_status: true
 
