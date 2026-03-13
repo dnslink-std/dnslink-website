@@ -433,12 +433,34 @@ There are currently reference implementations for two programming languages avai
 
 Both are tested using the universal [DNSLink test harness][dnslink-test].
 
+## Tools & Automation
+
+### dnslink-action
+
+[dnslink-action](https://github.com/ipshipyard/dnslink-action) is a GitHub Action for automatically updating DNSLink records as part of your CI/CD pipeline. It supports Cloudflare, DNSimple, and Gandi DNS providers.
+
+### Sandboxed DNS Zone Pattern
+
+For production deployments, the recommended security practice is to use a **sandboxed DNS zone** to limit what your CI API token can modify. This minimizes exposure if credentials are compromised.
+
+Instead of giving CI direct access to your domain's DNS:
+
+1. Create a dedicated zone for DNSLink records (e.g., `dnslinks.example.com`)
+2. Create an API token scoped only to that zone
+3. On your main domain, add a CNAME record: `_dnslink.yourdomain.com` -> `_dnslink.yourdomain.dnslinks.example.com`
+4. CI updates the TXT record on the sandboxed zone
+
+This way, a compromised token can only modify the DNSLink TXT record, not other DNS records like A, MX, or NS on your main domain.
+
+See the [dnslink-action security documentation](https://github.com/ipshipyard/dnslink-action?tab=readme-ov-file#security-sandboxed-dnslink-domain) for detailed setup instructions.
+
 ## External Resources
 
 - [IPFS and DNSLink][ipfs-dnslink]
 - [IPFS Companion and DNSLink][ipfs-companion-dnslink]
+- [dnslink-action](https://github.com/ipshipyard/dnslink-action) - GitHub Action for automated DNSLink updates
+- [Automate DNSLink updates with GitHub Actions](https://docs.ipfs.tech/how-to/websites-on-ipfs/dnslink-action/) - Step-by-step guide
 - [DNSLink support at Cloudflare][cloudflare-dnslink]
-- [DNSLink support at Fleek][fleek-dnslink]
 - [Youtube: Explanation of how DNSLink and the IPFS Gateway works][yt-explainer]
 
 ## FAQ
