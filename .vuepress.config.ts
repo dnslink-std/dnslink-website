@@ -27,6 +27,7 @@ export default defineUserConfig({
   },
   theme: defaultTheme({
     editLink: true,
+    contributors: false,
     docsDir: 'docs',
     docsRepo: 'https://github.com/dnslink-std/dnslink-website'
   })
